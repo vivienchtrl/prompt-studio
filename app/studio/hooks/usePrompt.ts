@@ -2,78 +2,18 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { PromptNode, NodeType } from '../types';
+import { promptNodesToJson } from '../utils/transform';
 
 const createNewNode = (
   type: NodeType,
-  parentId: string | null = null,
   key = ''
 ): PromptNode => ({
   id: crypto.randomUUID(),
   key,
-  value: '',
+  value: type === 'string' ? '' : '',
+  values: type === 'stringArray' ? [''] : [],
   type,
-  children: [],
-  parentId,
 });
-
-const recursivelyUpdateNode = (
-  nodes: PromptNode[],
-  id: string,
-  updates: Partial<Omit<PromptNode, 'id'>>
-): PromptNode[] => {
-  return nodes.map((node) => {
-    if (node.id === id) {
-      const updatedNode = { ...node, ...updates };
-      // When changing type, reset value/children
-      if (updates.type && updates.type !== node.type) {
-        if (updates.type === 'string') {
-          updatedNode.children = [];
-        } else {
-          updatedNode.value = '';
-        }
-      }
-      return updatedNode;
-    }
-    if (node.children.length > 0) {
-      return {
-        ...node,
-        children: recursivelyUpdateNode(node.children, id, updates),
-      };
-    }
-    return node;
-  });
-};
-
-const recursivelyRemoveNode = (
-  nodes: PromptNode[],
-  id: string
-): PromptNode[] => {
-  return nodes.filter((node) => node.id !== id).map((node) => {
-    if (node.children.length > 0) {
-      return { ...node, children: recursivelyRemoveNode(node.children, id) };
-    }
-    return node;
-  });
-};
-
-const recursivelyAddChildNode = (
-  nodes: PromptNode[],
-  parentId: string,
-  newNode: PromptNode
-): PromptNode[] => {
-  return nodes.map((node) => {
-    if (node.id === parentId) {
-      return { ...node, children: [...node.children, newNode] };
-    }
-    if (node.children.length > 0) {
-      return {
-        ...node,
-        children: recursivelyAddChildNode(node.children, parentId, newNode),
-      };
-    }
-    return node;
-  });
-};
 
 const arrayMove = <T,>(array: T[], from: number, to: number): T[] => {
   const newArray = array.slice();
@@ -82,111 +22,210 @@ const arrayMove = <T,>(array: T[], from: number, to: number): T[] => {
   return newArray;
 };
 
-const recursivelyMoveNode = (
-  nodes: PromptNode[],
-  activeId: string,
-  overId: string
-): PromptNode[] => {
-  const activeIndex = nodes.findIndex((n) => n.id === activeId);
-  const overIndex = nodes.findIndex((n) => n.id === overId);
-
-  if (activeIndex !== -1 && overIndex !== -1) {
-    return arrayMove(nodes, activeIndex, overIndex);
-  }
-
-  return nodes.map((node) => {
-    if (node.children && node.children.length > 0) {
-      return {
-        ...node,
-        children: recursivelyMoveNode(node.children, activeId, overId),
-      };
-    }
-    return node;
-  });
-};
-
-
-const convertToJSON = (nodes: PromptNode[]): any => {
-  const result: { [key: string]: any } = {};
-  nodes.forEach((node) => {
-    if (!node.key) {
-      if (node.type === 'object') {
-        Object.assign(result, convertToJSON(node.children));
-      }
-      return;
-    }
-    if (node.type === 'string') {
-      result[node.key] = node.value;
-    } else if (node.type === 'object') {
-      result[node.key] = convertToJSON(node.children);
-    } else if (node.type === 'array') {
-      result[node.key] = node.children.map((child) => {
-        if (child.type === 'string') return child.value;
-        if (child.type === 'object') return convertToJSON(child.children);
-        return null;
-      });
-    }
-  });
-  return result;
-};
-
-const convertToXML = (nodes: PromptNode[], indent = '  '): string => {
-  return nodes
-    .map((node) => {
-      const tag = node.key || 'item';
-      if (node.type === 'string') {
-        return `${indent}<${tag}>${node.value}</${tag}>`;
-      }
-      if (node.type === 'object' || node.type === 'array') {
-        return `${indent}<${tag}>\n${convertToXML(
-          node.children,
-          indent + '  '
-        )}\n${indent}</${tag}>`;
-      }
-      return '';
-    })
-    .join('\n');
-};
-
 export const usePrompt = (initialNodes: PromptNode[] = []) => {
-  const [nodes, setNodes] = useState<PromptNode[]>(
-    initialNodes.length > 0 ? initialNodes : [createNewNode('object', null, 'prompt')]
-  );
+  const [nodes, setNodes] = useState<PromptNode[]>(initialNodes);
 
   const updateNode = useCallback(
     (id: string, updates: Partial<Omit<PromptNode, 'id'>>) => {
       setNodes((currentNodes) =>
-        recursivelyUpdateNode(currentNodes, id, updates)
+        currentNodes.map((node) => {
+          if (node.id === id) {
+            const updatedNode = { ...node, ...updates };
+            // Reset approprié selon le type
+            if (updates.type && updates.type !== node.type) {
+              if (updates.type === 'string') {
+                updatedNode.value = '';
+                updatedNode.values = [];
+              } else if (updates.type === 'stringArray') {
+                updatedNode.value = '';
+                updatedNode.values = [''];
+              }
+            }
+            return updatedNode;
+          }
+          return node;
+        })
       );
     },
     []
   );
 
   const removeNode = useCallback((id: string) => {
-    setNodes((currentNodes) => recursivelyRemoveNode(currentNodes, id));
+    setNodes((currentNodes) => currentNodes.filter((node) => node.id !== id));
   }, []);
 
-  const addChildNode = useCallback((parentId: string, type: NodeType) => {
-    const newNode = createNewNode(type, parentId);
-    setNodes((currentNodes) =>
-      recursivelyAddChildNode(currentNodes, parentId, newNode)
-    );
+  const addNode = useCallback((type: NodeType) => {
+    const newNode = createNewNode(type);
+    setNodes((currentNodes) => [...currentNodes, newNode]);
   }, []);
 
   const moveNode = useCallback((activeId: string, overId: string) => {
     if (activeId === overId) return;
+    
+    setNodes((currentNodes) => {
+      const activeIndex = currentNodes.findIndex((n) => n.id === activeId);
+      const overIndex = currentNodes.findIndex((n) => n.id === overId);
+
+      if (activeIndex !== -1 && overIndex !== -1) {
+        return arrayMove(currentNodes, activeIndex, overIndex);
+      }
+      return currentNodes;
+    });
+  }, []);
+
+  // Gestion des array items
+  const addArrayItem = useCallback((nodeId: string) => {
     setNodes((currentNodes) =>
-      recursivelyMoveNode(currentNodes, activeId, overId)
+      currentNodes.map((node) => {
+        if (node.id === nodeId && node.type === 'stringArray') {
+          return {
+            ...node,
+            values: [...node.values, '']
+          };
+        }
+        return node;
+      })
+    );
+  }, []);
+
+  const removeArrayItem = useCallback((nodeId: string, index: number) => {
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => {
+        if (node.id === nodeId && node.type === 'stringArray') {
+          return {
+            ...node,
+            values: node.values.filter((_, i) => i !== index)
+          };
+        }
+        return node;
+      })
+    );
+  }, []);
+
+  const updateArrayItem = useCallback((nodeId: string, index: number, value: string) => {
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => {
+        if (node.id === nodeId && node.type === 'stringArray') {
+          const newValues = [...node.values];
+          newValues[index] = value;
+          return {
+            ...node,
+            values: newValues
+          };
+        }
+        return node;
+      })
     );
   }, []);
 
   const promptAsJson = useMemo(() => {
-    const jsonObject = convertToJSON(nodes);
+    const jsonObject = promptNodesToJson(nodes);
     return JSON.stringify(jsonObject, null, 2);
   }, [nodes]);
 
   const promptAsXml = useMemo(() => {
-    return `<root>\n${convertToXML(nodes)}\n</root>`;
+    // Grouper les nœuds par structure hiérarchique
+    const xmlStructure: { [key: string]: any } = {};
+    
+    nodes.forEach(node => {
+      if (node.key.includes('.')) {
+        // Gérer les clés imbriquées comme "examples.positive"
+        const parts = node.key.split('.');
+        let current = xmlStructure;
+        
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) {
+            current[parts[i]] = {};
+          }
+          current = current[parts[i]];
+        }
+        
+        const lastKey = parts[parts.length - 1];
+        if (node.type === 'string') {
+          current[lastKey] = node.value;
+        } else if (node.type === 'stringArray') {
+          current[lastKey] = node.values;
+        }
+      } else {
+        // Clés simples
+        if (node.type === 'string') {
+          xmlStructure[node.key] = node.value;
+        } else if (node.type === 'stringArray') {
+          xmlStructure[node.key] = node.values;
+        }
+      }
+    });
+
+    // Convertir la structure en XML
+    const convertToXml = (obj: any, indent = '  '): string => {
+      return Object.entries(obj).map(([key, value]) => {
+        if (Array.isArray(value)) {
+          const items = value.map(item => `${indent}  <item>${item}</item>`).join('\n');
+          return `${indent}<${key}>\n${items}\n${indent}</${key}>`;
+        } else if (typeof value === 'object' && value !== null) {
+          const nestedXml = convertToXml(value, indent + '  ');
+          return `${indent}<${key}>\n${nestedXml}\n${indent}</${key}>`;
+        } else {
+          return `${indent}<${key}>${value}</${key}>`;
+        }
+      }).join('\n');
+    };
+
+    return `<root>\n${convertToXml(xmlStructure)}\n</root>`;
+  }, [nodes]);
+
+  const promptAsMarkdown = useMemo(() => {
+    // Grouper les nœuds par structure hiérarchique pour le markdown
+    const mdStructure: { [key: string]: any } = {};
+    
+    nodes.forEach(node => {
+      if (node.key.includes('.')) {
+        // Gérer les clés imbriquées comme "examples.positive"
+        const parts = node.key.split('.');
+        let current = mdStructure;
+        
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) {
+            current[parts[i]] = {};
+          }
+          current = current[parts[i]];
+        }
+        
+        const lastKey = parts[parts.length - 1];
+        if (node.type === 'string') {
+          current[lastKey] = node.value;
+        } else if (node.type === 'stringArray') {
+          current[lastKey] = node.values;
+        }
+      } else {
+        // Clés simples
+        if (node.type === 'string') {
+          mdStructure[node.key] = node.value;
+        } else if (node.type === 'stringArray') {
+          mdStructure[node.key] = node.values;
+        }
+      }
+    });
+
+    // Convertir la structure en Markdown
+    const convertToMarkdown = (obj: any, level = 1): string => {
+      return Object.entries(obj).map(([key, value]) => {
+        const heading = '#'.repeat(Math.min(level, 6));
+        const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+        
+        if (Array.isArray(value)) {
+          const items = value.map(item => `- ${item}`).join('\n');
+          return `${heading} ${capitalizedKey}\n\n${items}`;
+        } else if (typeof value === 'object' && value !== null) {
+          const nestedMd = convertToMarkdown(value, level + 1);
+          return `${heading} ${capitalizedKey}\n\n${nestedMd}`;
+        } else {
+          return `${heading} ${capitalizedKey}\n\n${value}`;
+        }
+      }).join('\n\n');
+    };
+
+    return convertToMarkdown(mdStructure);
   }, [nodes]);
 
   return {
@@ -194,9 +233,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
     setNodes,
     updateNode,
     removeNode,
-    addChildNode,
+    addNode,
     moveNode,
+    addArrayItem,
+    removeArrayItem,
+    updateArrayItem,
     promptAsJson,
     promptAsXml,
+    promptAsMarkdown,
   };
 };

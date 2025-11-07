@@ -1,66 +1,115 @@
-import { PromptNode } from '../types';
+import { PromptNode, NodeType } from '../types';
 
-export const jsonToPromptTree = (
-  json: any,
-  key: string = 'prompt'
-): PromptNode => {
-  const rootId = crypto.randomUUID();
+/**
+ * Transforme un JSON en liste de PromptNodes simplifiés
+ * Seuls 2 types : 'string' et 'stringArray'
+ */
+export const jsonToPromptNodes = (json: any): PromptNode[] => {
+  const nodes: PromptNode[] = [];
+  
+  const processObject = (obj: any) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      const nodeId = crypto.randomUUID();
+      
+      if (Array.isArray(value)) {
+        // Vérifier que c'est un array de strings
+        const isStringArray = value.every(item => typeof item === 'string');
+        
+        if (isStringArray) {
+          nodes.push({
+            id: nodeId,
+            key,
+            value: '',
+            values: value as string[],
+            type: 'stringArray'
+          });
+        } else {
+          // Si l'array contient des objets, les traiter récursivement
+          value.forEach((item, index) => {
+            if (typeof item === 'object' && item !== null) {
+              processObject({ [`${key}[${index}]`]: item });
+            }
+          });
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        // Traiter les objets imbriqués en préfixant les clés
+        Object.entries(value).forEach(([subKey, subValue]) => {
+          const fullKey = `${key}.${subKey}`;
+          if (Array.isArray(subValue)) {
+            const isStringArray = subValue.every(item => typeof item === 'string');
+            if (isStringArray) {
+              nodes.push({
+                id: crypto.randomUUID(),
+                key: fullKey,
+                value: '',
+                values: subValue as string[],
+                type: 'stringArray'
+              });
+            }
+          } else if (typeof subValue === 'string' || typeof subValue === 'number') {
+            nodes.push({
+              id: crypto.randomUUID(),
+              key: fullKey,
+              value: String(subValue),
+              values: [],
+              type: 'string'
+            });
+          }
+        });
+      } else {
+        // String simple
+        nodes.push({
+          id: nodeId,
+          key,
+          value: String(value),
+          values: [],
+          type: 'string'
+        });
+      }
+    });
+  };
 
-  const transform = (
-    currentJson: any,
-    parentId: string
-  ): PromptNode[] => {
-    if (typeof currentJson !== 'object' || currentJson === null) {
-      return [];
-    }
+  if (typeof json === 'object' && json !== null) {
+    processObject(json);
+  }
 
-    if (Array.isArray(currentJson)) {
-      return currentJson.map((item) => {
-        const itemId = crypto.randomUUID();
-        const itemType =
-          Array.isArray(item)
-            ? 'array'
-            : typeof item === 'object' && item !== null
-            ? 'object'
-            : 'string';
+  return nodes;
+};
 
-        return {
-          id: itemId,
-          key: '', 
-          value: itemType === 'string' ? String(item) : '',
-          type: itemType,
-          children: transform(item, itemId),
-          parentId: parentId,
-        };
-      });
+/**
+ * Convertit une liste de PromptNodes en JSON
+ */
+export const promptNodesToJson = (nodes: PromptNode[]): any => {
+  const result: any = {};
+  
+  nodes.forEach(node => {
+    if (node.key.includes('.')) {
+      // Gérer les clés imbriquées comme "examples.positive"
+      const parts = node.key.split('.');
+      let current = result;
+      
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!current[parts[i]]) {
+          current[parts[i]] = {};
+        }
+        current = current[parts[i]];
+      }
+      
+      const lastKey = parts[parts.length - 1];
+      if (node.type === 'string') {
+        current[lastKey] = node.value;
+      } else if (node.type === 'stringArray') {
+        current[lastKey] = node.values;
+      }
     } else {
-      return Object.entries(currentJson).map(([itemKey, itemValue]) => {
-        const itemId = crypto.randomUUID();
-        const itemType =
-          Array.isArray(itemValue)
-            ? 'array'
-            : typeof itemValue === 'object' && itemValue !== null
-            ? 'object'
-            : 'string';
-
-        return {
-          id: itemId,
-          key: itemKey,
-          value: itemType === 'string' ? String(itemValue) : '',
-          type: itemType,
-          children: transform(itemValue, itemId),
-          parentId: parentId,
-        };
-      });
+      // Clés simples
+      if (node.type === 'string') {
+        result[node.key] = node.value;
+      } else if (node.type === 'stringArray') {
+        result[node.key] = node.values;
+      }
     }
-  };
-
-  return {
-    id: rootId,
-    key: '',
-    value: '',
-    type: 'object',
-    children: transform(json, rootId),
-    parentId: null,
-  };
+  });
+  
+  return result;
 };

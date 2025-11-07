@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { getFrameworks, loadFramework } from '../actions/framework-actions';
-import { jsonToPromptTree } from '../utils/transform';
+import { jsonToPromptNodes } from '../utils/transform';
 import { PromptNode } from '../types';
 
 type FrameworkSelectorProps = {
@@ -24,14 +24,14 @@ export const FrameworkSelector = ({ onSelect }: FrameworkSelectorProps) => {
   useEffect(() => {
     getFrameworks().then(setFrameworks);
   }, []);
-
+ 
   const handleSelect = async (name: string) => {
     setIsLoading(true);
     try {
       const jsonContent = await loadFramework(name);
       if (jsonContent) {
-        const promptTree = jsonToPromptTree(jsonContent, name);
-        onSelect([promptTree]);
+        const promptNodes = jsonToPromptNodes(jsonContent);
+        onSelect(promptNodes);
       }
     } finally {
       setIsLoading(false);

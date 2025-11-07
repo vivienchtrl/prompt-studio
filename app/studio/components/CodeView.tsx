@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 
 type CodeViewProps = {
   code: string;
-  language: 'json' | 'xml';
-};
+  language: 'json' | 'xml' | 'markdown';
+}; 
 
 export const CodeView = ({ code, language }: CodeViewProps) => {
   const [copied, setCopied] = useState(false);
