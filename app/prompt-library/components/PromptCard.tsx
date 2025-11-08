@@ -10,7 +10,7 @@ interface PromptCardProps {
 
 export const PromptCard = ({ template }: PromptCardProps) => {
   return (
-    <Link href={`/prompts/${template.slug}`}>
+    <Link href={`/prompt-library/${template.slug}`}>
       <Card className="h-full cursor-pointer transition-all hover:shadow-lg hover:border-primary">
         <CardHeader>
           <CardTitle className="line-clamp-2">{template.name}</CardTitle>

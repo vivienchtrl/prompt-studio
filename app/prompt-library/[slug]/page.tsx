@@ -52,7 +52,7 @@ export default async function PromptDetailPage({ params }: PromptDetailPageProps
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="mx-auto max-w-4xl">
-        <Link href="/prompts">
+        <Link href="/prompt-library">
           <Button variant="ghost" className="mb-6">
             ← Back to Library
           </Button>
