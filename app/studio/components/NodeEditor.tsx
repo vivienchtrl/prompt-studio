@@ -1,11 +1,5 @@
 'use client';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PromptNode, NodeType } from '../types';
@@ -20,28 +14,8 @@ type NodeEditorProps = {
   onAddNode: (type: NodeType) => void;
 };
 
-const AddNodeMenu = ({
-  trigger,
-  onSelect,
-}: {
-  trigger: React.ReactNode;
-  onSelect: (type: NodeType) => void;
-}) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-    <DropdownMenuContent>
-      <DropdownMenuItem onSelect={() => onSelect('string')}>
-        Add Text Field
-      </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => onSelect('stringArray')}>
-        Add Text List
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
-
 export const NodeEditor = ({ node, promptHook, onAddNode }: NodeEditorProps) => {
-  const { updateNode, removeNode, removeArrayItem, updateArrayItem } = promptHook;
+  const { updateNode, removeNode, removeArrayItem, updateArrayItem, addArrayItem } = promptHook;
   const sortable = useSortable({ id: node.id });
   const { attributes = {}, listeners = {}, setNodeRef, transform, transition, isDragging = false } = sortable || {};
 
@@ -84,23 +58,15 @@ export const NodeEditor = ({ node, promptHook, onAddNode }: NodeEditorProps) => 
                 )}
               </div>
             ))}
-            <AddNodeMenu 
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Plus size={16} />
-                  Add Item
-                </Button>
-              }
-              onSelect={(type) => {
-                if (type === 'string' || type === 'stringArray') {
-                  onAddNode(type);
-                }
-              }}
-            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => addArrayItem(node.id)}
+            >
+              <Plus size={16} />
+              Add Item
+            </Button>
           </div>
         );
       default:
