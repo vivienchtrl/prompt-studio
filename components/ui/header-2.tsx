@@ -26,7 +26,7 @@ export function FloatingHeader() {
 		},
 		{
 			label: 'Library',
-			href: '/library',
+			href: '/prompt-library',
 		},
 	];
 
