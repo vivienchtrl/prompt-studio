@@ -17,6 +17,7 @@ import { CSS } from '@dnd-kit/utilities';
 type NodeEditorProps = {
   node: PromptNode;
   promptHook: ReturnType<typeof usePrompt>;
+  onAddNode: (type: NodeType) => void;
 };
 
 const AddNodeMenu = ({
@@ -39,18 +40,10 @@ const AddNodeMenu = ({
   </DropdownMenu>
 );
 
-export const NodeEditor = ({ node, promptHook }: NodeEditorProps) => {
-  const { updateNode, removeNode, addArrayItem, removeArrayItem, updateArrayItem } = promptHook;
+export const NodeEditor = ({ node, promptHook, onAddNode }: NodeEditorProps) => {
+  const { updateNode, removeNode, removeArrayItem, updateArrayItem } = promptHook;
   const sortable = useSortable({ id: node.id });
-  
-  const {
-    attributes = {},
-    listeners = {},
-    setNodeRef,
-    transform,
-    transition,
-    isDragging = false,
-  } = sortable || {};
+  const { attributes = {}, listeners = {}, setNodeRef, transform, transition, isDragging = false } = sortable || {};
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -91,15 +84,23 @@ export const NodeEditor = ({ node, promptHook }: NodeEditorProps) => {
                 )}
               </div>
             ))}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => addArrayItem(node.id)}
-              className="flex items-center gap-2"
-            >
-              <Plus size={16} />
-              Add Item
-            </Button>
+            <AddNodeMenu 
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Plus size={16} />
+                  Add Item
+                </Button>
+              }
+              onSelect={(type) => {
+                if (type === 'string' || type === 'stringArray') {
+                  onAddNode(type);
+                }
+              }}
+            />
           </div>
         );
       default:

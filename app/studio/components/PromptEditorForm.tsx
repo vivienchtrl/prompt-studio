@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { NodeType } from '../types';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
@@ -35,7 +34,7 @@ export const PromptEditorForm = ({ promptHook }: PromptEditorFormProps) => {
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={nodeIds} strategy={verticalListSortingStrategy}>
           {nodes.map((node) => (
-            <NodeEditor key={node.id} node={node} promptHook={promptHook} />
+            <NodeEditor key={node.id} node={node} promptHook={promptHook} onAddNode={addNode} />
           ))}
         </SortableContext>
       </DndContext>

@@ -11,11 +11,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogIn, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type LoginDialogProps = {
@@ -29,7 +27,6 @@ export const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +123,7 @@ export const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           </div>
           <DialogTitle>Rejoignez Prompt Studio</DialogTitle>
           <DialogDescription>
-            Connectez-vous pour utiliser la génération de prompts avec l'IA
+            Connectez-vous pour utiliser la génération de prompts avec l&apos;IA
           </DialogDescription>
         </DialogHeader>
         

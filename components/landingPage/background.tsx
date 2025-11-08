@@ -51,7 +51,6 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 		containerRef.current.appendChild(renderer.domElement);
 
 		// Create particles
-		const particles: THREE.Points[] = [];
 		const positions: number[] = [];
 		const colors: number[] = [];
 
@@ -120,7 +119,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 			// Update point sizes based on wave
 			const customMaterial = material as THREE.PointsMaterial & {
-				uniforms?: any;
+				uniforms?: Record<string, unknown>;
 			};
 			if (!customMaterial.uniforms) {
 				// For dynamic size changes, we'd need a custom shader

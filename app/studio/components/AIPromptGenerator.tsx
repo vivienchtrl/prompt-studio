@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { generatePromptWithAI } from '../actions/ai-actions';
 import { toast } from 'sonner';
@@ -18,7 +17,7 @@ import { useAuthContext } from '@/components/auth/AuthProvider';
 import { LoginDialog } from '@/components/auth/LoginDialog';
 
 type AIPromptGeneratorProps = {
-  onGenerate: (content: any) => void;
+  onGenerate: (content: Record<string, unknown>) => void;
 };
 
 export const AIPromptGenerator = ({ onGenerate }: AIPromptGeneratorProps) => {
@@ -41,13 +40,14 @@ export const AIPromptGenerator = ({ onGenerate }: AIPromptGeneratorProps) => {
       const result = await generatePromptWithAI(userRequest);
 
       if (result.success && result.content) {
-        setGeneratedJSON(result.content);
+        setGeneratedJSON(result.content as string);
         setUserRequest('');
         toast.success('Prompt generated! ✨');
       } else {
         toast.error(result.error || 'Failed to generate prompt');
       }
     } catch (error) {
+      console.error('Error generating prompt:', error);
       toast.error('An error occurred');
     } finally {
       setIsLoading(false);
@@ -80,6 +80,7 @@ export const AIPromptGenerator = ({ onGenerate }: AIPromptGeneratorProps) => {
         setGeneratedJSON(null);
         setIsAIDialogOpen(false);
       } catch (error) {
+        console.error('Error parsing JSON:', error);
         toast.error('Invalid JSON format');
       }
     }

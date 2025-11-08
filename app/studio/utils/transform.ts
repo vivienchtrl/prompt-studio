@@ -1,13 +1,13 @@
-import { PromptNode, NodeType } from '../types';
+import { PromptNode } from '../types';
 
 /**
  * Transforme un JSON en liste de PromptNodes simplifiés
  * Seuls 2 types : 'string' et 'stringArray'
  */
-export const jsonToPromptNodes = (json: any): PromptNode[] => {
+export const jsonToPromptNodes = (json: Record<string, unknown>): PromptNode[] => {
   const nodes: PromptNode[] = [];
   
-  const processObject = (obj: any) => {
+  const processObject = (obj: Record<string, unknown>) => {
     Object.entries(obj).forEach(([key, value]) => {
       const nodeId = crypto.randomUUID();
       
@@ -79,8 +79,8 @@ export const jsonToPromptNodes = (json: any): PromptNode[] => {
 /**
  * Convertit une liste de PromptNodes en JSON
  */
-export const promptNodesToJson = (nodes: PromptNode[]): any => {
-  const result: any = {};
+export const promptNodesToJson = (nodes: PromptNode[]): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
   
   nodes.forEach(node => {
     if (node.key.includes('.')) {
@@ -90,9 +90,9 @@ export const promptNodesToJson = (nodes: PromptNode[]): any => {
       
       for (let i = 0; i < parts.length - 1; i++) {
         if (!current[parts[i]]) {
-          current[parts[i]] = {};
+          current[parts[i]] = {} as Record<string, unknown>;
         }
-        current = current[parts[i]];
+        current = current[parts[i]] as Record<string, unknown>;
       }
       
       const lastKey = parts[parts.length - 1];

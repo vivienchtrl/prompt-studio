@@ -20,7 +20,7 @@ const DefaultAuthWall = () => (
       </div>
       <CardTitle>Fonctionnalité Premium</CardTitle>
       <CardDescription>
-        Vous devez être connecté pour utiliser la génération de prompts avec l'IA
+        Vous devez être connecté pour utiliser la génération de prompts avec l&apos;IA
       </CardDescription>
     </CardHeader>
     <CardContent className="space-y-4">
@@ -29,7 +29,7 @@ const DefaultAuthWall = () => (
           Accédez à toutes les fonctionnalités avancées :
         </p>
         <ul className="text-sm text-muted-foreground space-y-1">
-          <li>• Génération de prompts avec l'IA</li>
+          <li>• Génération de prompts avec l&apos;IA</li>
           <li>• Frameworks de prompt avancés</li>
           <li>• Sauvegarde de vos prompts</li>
           <li>• Export dans tous les formats</li>

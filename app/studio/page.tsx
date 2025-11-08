@@ -16,9 +16,9 @@ import { jsonToPromptNodes } from './utils/transform';
 import { useSearchParams } from 'next/navigation';
 import { generatePromptWithAI } from './actions/ai-actions';
 import { toast } from 'sonner';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 
-export default function EditorPage() {
+function EditorPageContent() {
   const promptHook = usePrompt();
   const searchParams = useSearchParams();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -29,7 +29,7 @@ export default function EditorPage() {
   // Ref pour éviter la double génération (React 18 Strict Mode)
   const hasGeneratedRef = useRef(false);
 
-  const handleAIGenerated = async (content: any) => {
+  const handleAIGenerated = useCallback(async (content: Record<string, unknown>) => {
     try {
       const jsonData = typeof content === 'string' ? JSON.parse(content) : content;
       const promptNodes = jsonToPromptNodes(jsonData);
@@ -45,7 +45,7 @@ export default function EditorPage() {
       };
       promptHook.setNodes([fallbackNode]);
     }
-  };
+  }, [promptHook.setNodes]);
 
   // Auto-generate prompt if query param exists
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function EditorPage() {
         const result = await generatePromptWithAI(promptRequest);
         
         if (result.success && result.content) {
-          await handleAIGenerated(result.content);
+          await handleAIGenerated(JSON.parse(result.content as string));
           toast.success('Prompt généré avec succès! ✨');
           
           // Clean URL after generation
@@ -69,6 +69,7 @@ export default function EditorPage() {
           toast.error(result.error || 'Échec de la génération');
         }
       } catch (error) {
+        console.error('Error generating prompt:', error);
         toast.error('Une erreur est survenue');
       } finally {
         setIsGenerating(false);
@@ -76,7 +77,7 @@ export default function EditorPage() {
     };
 
     handleAutoGenerate();
-  }, [promptRequest]); // Ne dépend que de promptRequest
+  }, [promptRequest, isGenerating, handleAIGenerated]); // Ne dépend que de promptRequest et isGenerating
 
   return (
     <div className="flex h-screen bg-background text-foreground mt-20 mx-auto max-w-7xl">
@@ -130,5 +131,19 @@ export default function EditorPage() {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
+  );
+}
+
+export default function EditorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center text-sm text-muted-foreground">
+          Loading studio...
+        </div>
+      }
+    >
+      <EditorPageContent />
+    </Suspense>
   );
 }

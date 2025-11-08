@@ -125,7 +125,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
 
   const promptAsXml = useMemo(() => {
     // Grouper les nœuds par structure hiérarchique
-    const xmlStructure: { [key: string]: any } = {};
+    const xmlStructure: Record<string, unknown> = {};
     
     nodes.forEach(node => {
       if (node.key.includes('.')) {
@@ -137,7 +137,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
           if (!current[parts[i]]) {
             current[parts[i]] = {};
           }
-          current = current[parts[i]];
+          current = current[parts[i]] as Record<string, unknown>;
         }
         
         const lastKey = parts[parts.length - 1];
@@ -157,13 +157,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
     });
 
     // Convertir la structure en XML
-    const convertToXml = (obj: any, indent = '  '): string => {
+    const convertToXml = (obj: Record<string, unknown>, indent = '  '): string => {
       return Object.entries(obj).map(([key, value]) => {
         if (Array.isArray(value)) {
           const items = value.map(item => `${indent}  <item>${item}</item>`).join('\n');
           return `${indent}<${key}>\n${items}\n${indent}</${key}>`;
         } else if (typeof value === 'object' && value !== null) {
-          const nestedXml = convertToXml(value, indent + '  ');
+          const nestedXml = convertToXml(value as Record<string, unknown>, indent + '  ');
           return `${indent}<${key}>\n${nestedXml}\n${indent}</${key}>`;
         } else {
           return `${indent}<${key}>${value}</${key}>`;
@@ -176,7 +176,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
 
   const promptAsMarkdown = useMemo(() => {
     // Grouper les nœuds par structure hiérarchique pour le markdown
-    const mdStructure: { [key: string]: any } = {};
+    const mdStructure: Record<string, unknown> = {};
     
     nodes.forEach(node => {
       if (node.key.includes('.')) {
@@ -188,7 +188,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
           if (!current[parts[i]]) {
             current[parts[i]] = {};
           }
-          current = current[parts[i]];
+          current = current[parts[i]] as Record<string, unknown>;
         }
         
         const lastKey = parts[parts.length - 1];
@@ -208,7 +208,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
     });
 
     // Convertir la structure en Markdown
-    const convertToMarkdown = (obj: any, level = 1): string => {
+    const convertToMarkdown = (obj: Record<string, unknown>, level = 1): string => {
       return Object.entries(obj).map(([key, value]) => {
         const heading = '#'.repeat(Math.min(level, 6));
         const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
@@ -217,7 +217,7 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
           const items = value.map(item => `- ${item}`).join('\n');
           return `${heading} ${capitalizedKey}\n\n${items}`;
         } else if (typeof value === 'object' && value !== null) {
-          const nestedMd = convertToMarkdown(value, level + 1);
+          const nestedMd = convertToMarkdown(value as Record<string, unknown>, level + 1);
           return `${heading} ${capitalizedKey}\n\n${nestedMd}`;
         } else {
           return `${heading} ${capitalizedKey}\n\n${value}`;

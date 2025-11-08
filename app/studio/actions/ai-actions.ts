@@ -114,7 +114,7 @@ Remember: RESPOND WITH ONLY JSON.`;
     }
 
     const data = await response.json();
-    let content = data.choices[0].message.content.trim();
+    const content = data.choices[0].message.content.trim();
 
     // 🎯 VALIDATION STRICTE
     const validJSON = extractAndValidateJSON(content);

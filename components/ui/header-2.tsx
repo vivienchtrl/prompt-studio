@@ -17,7 +17,7 @@ import Link from 'next/link';
 
 export function FloatingHeader() {
 	const [open, setOpen] = React.useState(false);
-	const { user, isAuthenticated, signOut, loading } = useAuthContext();
+	const { isAuthenticated, signOut, loading } = useAuthContext();
 
 	const links = [
 		{
