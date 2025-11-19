@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Stats1 = () => {
   return (
@@ -61,7 +62,9 @@ const Stats1 = () => {
             </p>
           </div>
           <div className="flex flex-col items-center gap-4">
-            <Button className="mt-4 h-14 px-10">Start prompting for free</Button>
+            <Link href="/login">
+              <Button className="mt-4 h-14 px-10">Start prompting for free</Button>
+            </Link>
             <p className="text-muted-foreground text-xs">
               No pricing, all features available.
             </p>

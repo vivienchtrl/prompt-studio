@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Cta1 = () => {
   return (
@@ -48,7 +49,9 @@ const Cta1 = () => {
 
           {/* Call-to-Action Buttons */}
           <div className="mt-10 flex items-center justify-center gap-3">
-            <Button>Start building prompts for free</Button>
+            <Link href="/login">
+              <Button>Start building prompts for free</Button>
+            </Link>
           </div>
         </div>
       </div>

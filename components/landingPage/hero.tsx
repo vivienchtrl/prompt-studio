@@ -82,7 +82,7 @@ export const Hero = () => {
             </span>.
           </p>
           <div className="flex items-center justify-center gap-2">
-            <Link href="/graphic">
+            <Link href="/login">
                 <CtaButton className="w-full rounded-xl" >
                   Try it ! (it&apos;s free)
                 </CtaButton>
