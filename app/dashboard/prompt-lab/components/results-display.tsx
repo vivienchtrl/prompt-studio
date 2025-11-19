@@ -8,8 +8,7 @@ import { getFullModelInfo } from '../utils/models';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import ReactMarkdown, { type Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { type Components } from 'react-markdown';
 
 type MarkdownCodeProps = ComponentPropsWithoutRef<'code'> & {
   inline?: boolean;

@@ -1,8 +1,8 @@
-import { streamText } from 'ai';
+import { streamText, StreamTextResult } from 'ai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 
 import { DEFAULT_TEMPERATURE } from '../constants';
-import type { ProviderImplementation } from '../types';
+import type { ProviderImplementation, ProviderRunParams } from '../types';
 
 export const anthropicProvider: ProviderImplementation = {
   id: 'anthropic',
@@ -20,7 +20,7 @@ export const anthropicProvider: ProviderImplementation = {
     { id: 'claude-3-5-sonnet-20240620', name: 'Claude 3.5 Sonnet' },
     { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey }: ProviderRunParams) => {
     const client = createAnthropic({ apiKey });
     return streamText({
       model: client(modelId),

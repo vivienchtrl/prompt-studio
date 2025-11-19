@@ -1,4 +1,5 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Menu } from "lucide-react";
+import Link from "next/link";
 
 import {
   Accordion,
@@ -142,7 +143,7 @@ const renderMenuItem = (item: MenuItem) => {
             {item.items.map((subItem) => (
               <li key={subItem.title}>
                 <NavigationMenuLink asChild>
-                  <a
+                  <Link
                     className="flex select-none gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
                     href={subItem.url}
                   >
@@ -157,7 +158,7 @@ const renderMenuItem = (item: MenuItem) => {
                         </p>
                       )}
                     </div>
-                  </a>
+                  </Link>
                 </NavigationMenuLink>
               </li>
             ))}
@@ -168,13 +169,13 @@ const renderMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <a
+    <Link
       key={item.title}
       className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground"
       href={item.url}
     >
       {item.title}
-    </a>
+    </Link>
   );
 };
 
@@ -187,7 +188,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
         </AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
-            <a
+            <Link
               key={subItem.title}
               className="flex select-none gap-4 rounded-md p-3 leading-none outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
               href={subItem.url}
@@ -201,7 +202,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
                   </p>
                 )}
               </div>
-            </a>
+            </Link>
           ))}
         </AccordionContent>
       </AccordionItem>
@@ -209,9 +210,9 @@ const renderMobileMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <a key={item.title} href={item.url} className="font-semibold">
+    <Link key={item.title} href={item.url} className="font-semibold">
       {item.title}
-    </a>
+    </Link>
   );
 };
 

@@ -7,10 +7,6 @@ import { requireAuth } from '@/lib/backend/guards'
 import { handleError } from '@/lib/backend/utils/error.utils'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import {
-  isErrorResponse,
-  isSuccessResponse,
-} from "@/lib/backend/utils/response.utils";
 
 /**
  * Prompt Server Actions
@@ -120,7 +116,7 @@ export async function createPromptFromTemplate(formData: FormData) {
     redirect(`/dashboard/prompts/${prompt.id}`)
   } catch (error) {
     // Re-throw redirect errors - Next.js handles them internally
-    if (error instanceof Error && (error as any).digest?.startsWith('NEXT_REDIRECT')) {
+    if (error instanceof Error && (error as unknown as { digest?: string }).digest?.startsWith('NEXT_REDIRECT')) {
       throw error
     }
     // En cas d'erreur réelle, retourner une erreur gérable

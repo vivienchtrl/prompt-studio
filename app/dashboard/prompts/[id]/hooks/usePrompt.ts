@@ -144,13 +144,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
     // NOTE: Idéalement, promptNodesToXml devrait accepter un arbre directement.
     // Pour l'instant, nous allons utiliser une conversion JSON intermédiaire.
     const tempJson = treeNodesToJson(nodes);
-    const flattenNodes = (json: Record<string, any>, prefix = ''): PromptNode[] => {
+    const flattenNodes = (json: Record<string, unknown>, prefix = ''): PromptNode[] => {
       let result: PromptNode[] = [];
       for (const key in json) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
         const value = json[key];
         if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-          result = result.concat(flattenNodes(value, fullKey));
+          result = result.concat(flattenNodes(value as Record<string, unknown>, fullKey));
         } else if (Array.isArray(value)) {
           result.push({ id: '', key: fullKey, type: 'stringArray', values: value, value: '' });
         } else {
@@ -164,13 +164,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
 
   const promptAsMarkdown = useMemo(() => {
     const tempJson = treeNodesToJson(nodes);
-     const flattenNodes = (json: Record<string, any>, prefix = ''): PromptNode[] => {
+     const flattenNodes = (json: Record<string, unknown>, prefix = ''): PromptNode[] => {
       let result: PromptNode[] = [];
       for (const key in json) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
         const value = json[key];
         if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-          result = result.concat(flattenNodes(value, fullKey));
+          result = result.concat(flattenNodes(value as Record<string, unknown>, fullKey));
         } else if (Array.isArray(value)) {
           result.push({ id: '', key: fullKey, type: 'stringArray', values: value, value: '' });
         } else {
@@ -184,13 +184,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
 
   const promptAsYaml = useMemo(() => {
     const tempJson = treeNodesToJson(nodes);
-    const flattenNodes = (json: Record<string, any>, prefix = ''): PromptNode[] => {
+    const flattenNodes = (json: Record<string, unknown>, prefix = ''): PromptNode[] => {
       let result: PromptNode[] = [];
       for (const key in json) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
         const value = json[key];
         if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-          result = result.concat(flattenNodes(value, fullKey));
+          result = result.concat(flattenNodes(value as Record<string, unknown>, fullKey));
         } else if (Array.isArray(value)) {
           result.push({ id: '', key: fullKey, type: 'stringArray', values: value, value: '' });
         } else {
@@ -204,13 +204,13 @@ export const usePrompt = (initialNodes: PromptNode[] = []) => {
 
   const promptAsToon = useMemo(() => {
     const tempJson = treeNodesToJson(nodes);
-    const flattenNodes = (json: Record<string, any>, prefix = ''): PromptNode[] => {
+    const flattenNodes = (json: Record<string, unknown>, prefix = ''): PromptNode[] => {
       let result: PromptNode[] = [];
       for (const key in json) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
         const value = json[key];
         if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-          result = result.concat(flattenNodes(value, fullKey));
+          result = result.concat(flattenNodes(value as Record<string, unknown>, fullKey));
         } else if (Array.isArray(value)) {
           result.push({ id: '', key: fullKey, type: 'stringArray', values: value, value: '' });
         } else {

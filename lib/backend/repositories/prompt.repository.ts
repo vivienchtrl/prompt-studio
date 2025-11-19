@@ -22,7 +22,10 @@ export async function createPrompt(
     .values({
       userId: userId,
       title: data.title,
-      content: data.content as any, // Drizzle expects a string, but content can be an object
+      content:
+        typeof data.content === 'string'
+          ? data.content
+          : JSON.stringify(data.content),
       json: data.json,
     })
     .returning()
@@ -104,16 +107,21 @@ export async function deletePrompt(id: string): Promise<void> {
 /**
  * Response mapper - transform database object to output type
  */
-function mapPromptResponse(data: unknown): PromptOutput {
-  const prompt = data as any
+function mapPromptResponse(
+  prompt: Record<string, unknown> | null,
+): PromptOutput {
+  if (!prompt) {
+    throw new Error('Invalid prompt data')
+  }
+
   return {
     id: String(prompt.id),
-    userId: String(prompt.userId || prompt.user_id),
+    userId: String(prompt.user_id),
     title: String(prompt.title),
     content: String(prompt.content),
-    json: prompt.json as Record<string, unknown>,
-    createdAt: new Date(prompt.createdAt || prompt.created_at),
-    updatedAt: new Date(prompt.updatedAt || prompt.updated_at),
+    json: (prompt.json as Record<string, unknown>) || {},
+    createdAt: new Date(prompt.created_at as string),
+    updatedAt: new Date(prompt.updated_at as string),
   }
 }
 

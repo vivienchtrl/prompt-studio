@@ -69,15 +69,3 @@ export async function requireApiKeyOwnership(
   }
 }
 
-/**
- * Simple permission check (can be extended for RBAC)
- */
-export async function requirePermission(
-  _userId: string,
-  _permission: string
-): Promise<void> {
-  // Simple implementation - can be extended with role-based access control
-  // For now, authenticated users have all permissions
-  // In future: check user roles/permissions from database
-}
-

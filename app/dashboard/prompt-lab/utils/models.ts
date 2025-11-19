@@ -9,6 +9,7 @@ import {
   ProviderId,
   SelectedModels,
   getProviderFromModelId,
+  ResultState,
 } from '../types/definitions';
 
 /**
@@ -83,8 +84,8 @@ export const initializeSelectedModels = (): SelectedModels => {
 /**
  * Initialize empty results object for active models
  */
-export const initializeResults = (activeModels: ModelId[]): Partial<Record<ModelId, any>> => {
-  const results: Partial<Record<ModelId, any>> = {};
+export const initializeResults = (activeModels: ModelId[]): ResultState => {
+  const results: ResultState = {};
   activeModels.forEach(modelId => {
     results[modelId] = { output: '', isLoading: true };
   });

@@ -34,7 +34,9 @@ export function PromptEditorUI({ prompt }: { prompt: PromptOutput }) {
       return jsonToTreeNodes(content);
     } catch (e) {
       console.error("Failed to parse prompt content", e);
-      toast.error("Failed to load prompt content.");
+      toast.error("Failed to load prompt content.", {
+        description: "Failed to load prompt content",
+      });
       return [];
     }
   }, [prompt.content]);
@@ -45,7 +47,9 @@ export function PromptEditorUI({ prompt }: { prompt: PromptOutput }) {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast.error('Veuillez entrer un titre pour votre prompt.');
+      toast.error('Veuillez entrer un titre pour votre prompt.', {
+        description: 'Please enter a title for your prompt',
+      });
       return;
     }
     setIsSaving(true);
@@ -56,14 +60,20 @@ export function PromptEditorUI({ prompt }: { prompt: PromptOutput }) {
       });
 
       if (isSuccessResponse(response)) {
-        toast.success('Prompt mis à jour avec succès !');
+        toast.success('Prompt mis à jour avec succès !', {
+          description: 'The prompt has been updated successfully',
+        });
         router.push('/dashboard/prompts');
         router.refresh();
       } else {
-        toast.error(response.error?.message || 'Échec de la mise à jour du prompt.');
+        toast.error(response.error?.message || 'Échec de la mise à jour du prompt.', {
+          description: response.error?.message || 'Unknown error',
+        });
       }
     } catch (error) {
-      toast.error('Une erreur inattendue est survenue.');
+      toast.error('Une erreur inattendue est survenue.', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
     } finally {
       setIsSaving(false);
     }

@@ -3,7 +3,6 @@
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 
 interface PromptEditorProps {
   prompt: string;

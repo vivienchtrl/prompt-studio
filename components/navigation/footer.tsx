@@ -1,4 +1,5 @@
 import { FacebookIcon, InstagramIcon, TwitterIcon, YoutubeIcon } from 'lucide-react'
+import Link from 'next/link'
 
 import { Separator } from '@/components/ui/separator'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -8,10 +9,10 @@ const Footer = () => {
     <footer>
       <div className='mt-32 mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 max-md:flex-col sm:px-6 sm:py-6 md:gap-6 md:py-8'>
         <div className='flex items-center gap-5 whitespace-nowrap'>
-          <a href='/'>Home</a>
-          <a href='/prompt-library'>Library</a>
-          <a href='/studio'>Studio</a>
-          <a href='/blog'>Blog</a>
+          <Link href='/'>Home</Link>
+          <Link href='/prompt-library'>Library</Link>
+          <Link href='/studio'>Studio</Link>
+          <Link href='/blog'>Blog</Link>
           <ThemeToggle />
         </div>
 

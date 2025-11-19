@@ -57,10 +57,14 @@ export function ApiKeysClient({ initialApiKeys }: ApiKeysClientProps) {
             },
           }))
         } else {
-          toast.error(result.error?.message || 'Failed to load API key')
+          toast.error(result.error?.message || 'Failed to load API key', {
+            description: result.error?.message || 'Unknown error',
+          })
         }
       } catch (error) {
-        toast.error('Failed to load API key')
+        toast.error('Failed to load API key', {
+          description: error instanceof Error ? error.message : 'Unknown error',
+        })
       }
     } else {
       setApiKeys((prev) => ({
@@ -77,7 +81,9 @@ export function ApiKeysClient({ initialApiKeys }: ApiKeysClientProps) {
     const state = apiKeys[providerId]
 
     if (!state.value.trim()) {
-      toast.error('API key cannot be empty')
+      toast.error('API key cannot be empty', {
+        description: 'API key cannot be empty',
+      })
       return
     }
 

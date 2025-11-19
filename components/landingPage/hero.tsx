@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
-
 // this is a client component
 import Link from "next/link";
-import { ShineBorder, TypeWriter } from "@/components/landingPage/hero-designali";
+import { TypeWriter } from "@/components/landingPage/hero-designali";
 import { Plus } from "lucide-react"; 
 import { CtaButton } from "@/components/landingPage/cta-button";
 
@@ -86,7 +84,7 @@ export const Hero = () => {
           <div className="flex items-center justify-center gap-2">
             <Link href="/graphic">
                 <CtaButton className="w-full rounded-xl" >
-                  Try it ! (it's free)
+                  Try it ! (it&apos;s free)
                 </CtaButton>
             </Link> 
             <Link href={"/login"} target="_blank">

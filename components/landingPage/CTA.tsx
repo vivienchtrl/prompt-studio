@@ -1,6 +1,5 @@
 "use client";
 
-import { Award, Cat, ShieldCheck, Star, StarHalf } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";

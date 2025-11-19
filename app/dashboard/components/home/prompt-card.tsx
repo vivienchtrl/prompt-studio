@@ -26,19 +26,24 @@ interface PromptCardProps {
 
 export function PromptCard({ prompt }: PromptCardProps) {
   const router = useRouter()
-  const truncatedContent = prompt.content.substring(0, 150) + (prompt.content.length > 150 ? '...' : '')
 
   const handleDelete = async () => {
     try {
       const result = await deletePromptAction(prompt.id)
       if (result.success) {
-        toast.success('Prompt deleted successfully')
+        toast.success('Prompt deleted successfully', {
+          description: 'The prompt has been deleted successfully',
+        })
         router.refresh()
       } else {
-        toast.error('Failed to delete prompt')
+        toast.error('Failed to delete prompt', {
+          description: result.error?.message || 'Unknown error',
+        })
       }
     } catch (error) {
-      toast.error('An error occurred while deleting the prompt')
+      toast.error('An error occurred while deleting the prompt', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      })
     }
   }
 

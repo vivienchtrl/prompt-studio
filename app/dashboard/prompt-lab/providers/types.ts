@@ -11,7 +11,9 @@ export interface ProviderRunParams {
   apiKey: string;
 }
 
-export type ProviderRunner = (params: ProviderRunParams) => Promise<StreamTextResult<any, any>>;
+export type ProviderRunner = (
+  params: ProviderRunParams,
+) => Promise<StreamTextResult<Record<string, never>, string>>;
 
 export interface ProviderImplementation {
   id: string;

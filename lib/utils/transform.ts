@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 export const jsonToPromptNodes = (json: Record<string, unknown>): PromptNode[] => {
   const nodes: PromptNode[] = [];
 
-  function processEntry(key: string, value: any, prefix = '') {
+  function processEntry(key: string, value: unknown, prefix = '') {
     const fullKey = prefix ? `${prefix}.${key}` : key;
 
     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
@@ -21,7 +21,7 @@ export const jsonToPromptNodes = (json: Record<string, unknown>): PromptNode[] =
       });
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       // C'est un objet, on continue la récursion
-      Object.entries(value).forEach(([subKey, subValue]) => {
+      Object.entries(value as Record<string, unknown>).forEach(([subKey, subValue]) => {
         processEntry(subKey, subValue, fullKey);
       });
     } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -86,7 +86,7 @@ export const promptNodesToJson = (nodes: PromptNode[]): Record<string, unknown> 
  * Convertit une liste de PromptNodes en XML
  */
 
-const jsonToXmlRecursive = (json: Record<string, any>, indent = ''): string => {
+const jsonToXmlRecursive = (json: Record<string, unknown>, indent = ''): string => {
   let xml = '';
   for (const key in json) {
     if (!Object.prototype.hasOwnProperty.call(json, key)) continue;
@@ -99,7 +99,7 @@ const jsonToXmlRecursive = (json: Record<string, any>, indent = ''): string => {
       value.forEach(item => {
         if (typeof item === 'object' && item !== null) {
           xml += `${indent}  <item>\n`;
-          xml += jsonToXmlRecursive(item, indent + '    ');
+          xml += jsonToXmlRecursive(item as Record<string, unknown>, indent + '    ');
           xml += `${indent}  </item>\n`;
         } else {
           xml += `${indent}  <item>${String(item)}</item>\n`;
@@ -108,7 +108,7 @@ const jsonToXmlRecursive = (json: Record<string, any>, indent = ''): string => {
       xml += `${indent}`;
     } else if (typeof value === 'object' && value !== null) {
       xml += '\n';
-      xml += jsonToXmlRecursive(value, indent + '  ');
+      xml += jsonToXmlRecursive(value as Record<string, unknown>, indent + '  ');
       xml += `${indent}`;
     } else {
       xml += String(value);
@@ -131,7 +131,7 @@ export const promptNodesToXml = (nodes: PromptNode[]): string => {
  * Convertit une liste de PromptNodes en Markdown
  */
 
-const jsonToMarkdownRecursive = (json: Record<string, any>, level: number): string => {
+const jsonToMarkdownRecursive = (json: Record<string, unknown>, level: number): string => {
   let markdown = '';
   const heading = '#'.repeat(level);
 
@@ -152,7 +152,7 @@ const jsonToMarkdownRecursive = (json: Record<string, any>, level: number): stri
       });
       markdown += '\n';
     } else if (typeof value === 'object' && value !== null) {
-      markdown += jsonToMarkdownRecursive(value, level + 1);
+      markdown += jsonToMarkdownRecursive(value as Record<string, unknown>, level + 1);
     } else {
       markdown += `${String(value)}\n\n`;
     }
@@ -185,7 +185,7 @@ export const promptNodesToYaml = (nodes: PromptNode[]): string => {
 export const promptNodesToToon = (nodes: PromptNode[]): string => {
   const json = promptNodesToJson(nodes);
   
-  const toToonRecursive = (obj: any, indentLevel = 0): string => {
+  const toToonRecursive = (obj: unknown, indentLevel = 0): string => {
     const indent = '  '.repeat(indentLevel);
     
     if (obj === null) return 'null';
@@ -197,10 +197,11 @@ export const promptNodesToToon = (nodes: PromptNode[]): string => {
        return ''; 
     }
     
-    if (typeof obj === 'object') {
-      const keys = Object.keys(obj);
+    if (typeof obj === 'object' && obj !== null) {
+      const objAsRecord = obj as Record<string, unknown>;
+      const keys = Object.keys(objAsRecord);
       return keys.map(key => {
-        const value = obj[key];
+        const value = objAsRecord[key];
         const cleanKey = key; // Les clés semblent brutes dans l'exemple
         
         if (Array.isArray(value)) {
@@ -241,8 +242,8 @@ export const promptNodesToToon = (nodes: PromptNode[]): string => {
 /**
  * Transforme un JSON en une arborescence de PromptNodes
  */
-export const jsonToTreeNodes = (json: Record<string, any>): PromptNode[] => {
-  const process = (key: string, value: any): PromptNode => {
+export const jsonToTreeNodes = (json: Record<string, unknown>): PromptNode[] => {
+  const process = (key: string, value: unknown): PromptNode => {
     const baseNode = { id: crypto.randomUUID(), key };
 
     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
@@ -255,7 +256,7 @@ export const jsonToTreeNodes = (json: Record<string, any>): PromptNode[] => {
         value: '',
         values: [],
         type: 'object',
-        children: Object.entries(value).map(([subKey, subValue]) => process(subKey, subValue)),
+        children: Object.entries(value as Record<string, unknown>).map(([subKey, subValue]) => process(subKey, subValue)),
       };
     }
 
@@ -270,8 +271,8 @@ export const jsonToTreeNodes = (json: Record<string, any>): PromptNode[] => {
 /**
  * Convertit une arborescence de PromptNodes en JSON
  */
-export const treeNodesToJson = (nodes: PromptNode[]): Record<string, any> => {
-  const result: Record<string, any> = {};
+export const treeNodesToJson = (nodes: PromptNode[]): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
 
   nodes.forEach(node => {
     if (node.type === 'object' && node.children) {

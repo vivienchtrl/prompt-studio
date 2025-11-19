@@ -6,7 +6,6 @@ import {
   SelectedModels,
   ResultState,
   ModelResult,
-  PROVIDERS,
 } from '../types/definitions';
 import {
   initializeSelectedModels,
