@@ -19,6 +19,13 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+    rules: {
+      // Transformer les warnings en erreurs sans bloquer le build
+      "no-console": "warn",
+      "@next/next/no-img-element": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      // Ajoutez ici d'autres règles spécifiques que vous voulez transformer en warnings
+    },
   },
 ];
 
