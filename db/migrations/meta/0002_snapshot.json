@@ -1,6 +1,6 @@
 {
-  "id": "d6fc8883-aefb-41a2-8462-7e732f84fba6",
-  "prevId": "33f7e266-a430-4402-9e0b-55c8fd913768",
+  "id": "2ce47f70-208f-4e30-a0af-8c7d2dd82efd",
+  "prevId": "29b61b70-2588-41ec-9b54-0dc82287d3db",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -355,6 +355,167 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.mcp_servers": {
+      "name": "mcp_servers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "github_url": {
+          "name": "github_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "mcp_server_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'uncategorized'"
+        },
+        "tags": {
+          "name": "tags",
+          "type": "varchar(255)[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about": {
+          "name": "about",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "features": {
+          "name": "features",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "readme": {
+          "name": "readme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "faq": {
+          "name": "faq",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "mcp_servers_name_idx": {
+          "name": "mcp_servers_name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "mcp_servers_category_idx": {
+          "name": "mcp_servers_category_idx",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "mcp_servers_tags_idx": {
+          "name": "mcp_servers_tags_idx",
+          "columns": [
+            {
+              "expression": "tags",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "mcp_servers_created_at_idx": {
+          "name": "mcp_servers_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "mcp_servers_slug_unique": {
+          "name": "mcp_servers_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      }
     }
   },
   "enums": {
@@ -366,9 +527,58 @@
         "cohere",
         "mistral",
         "google",
-        "deepseek",
+        "meta",
         "xai",
-        "anthropic"
+        "anthropic",
+        "deepseek"
+      ]
+    },
+    "public.mcp_server_category": {
+      "name": "mcp_server_category",
+      "schema": "public",
+      "values": [
+        "uncategorized",
+        "development_tools",
+        "code_repository",
+        "ide_integration",
+        "productivity",
+        "task_management",
+        "workflow_automation",
+        "research",
+        "knowledge_base",
+        "search_engine",
+        "media",
+        "image_processing",
+        "video_processing",
+        "design",
+        "ui_ux_tools",
+        "workplace",
+        "team_collaboration",
+        "document_sharing",
+        "file_management",
+        "cloud_storage",
+        "community",
+        "social_platform",
+        "forum_integration",
+        "ai",
+        "machine_learning",
+        "llm_tools",
+        "cloud_service",
+        "deployment",
+        "infrastructure",
+        "communication",
+        "messaging",
+        "video_conferencing",
+        "database_management",
+        "data_storage",
+        "data_analytics",
+        "security",
+        "authentication",
+        "authorization",
+        "monitoring",
+        "utilities",
+        "general_purpose",
+        "api_integration"
       ]
     }
   },

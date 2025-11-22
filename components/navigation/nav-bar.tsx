@@ -58,6 +58,10 @@ const Navbar1 = ({
       title: "Studio",
       url: "/studio",
     },
+    {
+      title: "Prompt Converters",
+      url: "/converter",
+    },
   ],
   auth = {
     login: { text: "Log in", url: "/login" },
@@ -114,6 +118,11 @@ const Navbar1 = ({
                       <Link href="/studio" legacyBehavior passHref>
                         <NavigationMenuLink className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground">
                           Studio
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link href="/converter" legacyBehavior passHref>
+                        <NavigationMenuLink className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground">
+                          Converters
                         </NavigationMenuLink>
                       </Link>
                     </div>

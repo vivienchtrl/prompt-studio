@@ -6,9 +6,10 @@ export const providerEnum = pgEnum('provider', [
   'cohere',
   'mistral',
   'google',
-  'deepseek',
-  'xai',
+  'meta',  // Ajoutez 'meta' qui était dans la migration originale
+  'xai', 
   'anthropic',
+  'deepseek'  // Ajoutez 'deepseek' à la fin
 ])
 
 export const userApiKeys = pgTable(

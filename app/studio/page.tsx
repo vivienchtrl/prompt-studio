@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Suspense } from 'react';
 import { Navbar1 } from '@/components/navigation/nav-bar';
 import { Footer } from '@/components/navigation/footer';
+import { StudioPageSchema } from '@/components/seo/studio/StudioPageSchema';
 
 function EditorPageContent() {
   const promptHook = usePrompt();
@@ -23,6 +24,7 @@ function EditorPageContent() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navbar at the top */}
+      <StudioPageSchema />
       <Navbar1 />
       
       {/* Main content area */}

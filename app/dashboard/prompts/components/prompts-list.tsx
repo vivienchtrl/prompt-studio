@@ -1,15 +1,10 @@
 'use client'
-import Link from 'next/link'
 import { PromptOutput } from '@/lib/backend/types'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia, EmptyContent } from '@/components/ui/empty'
 import { FileText } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { PromptCard } from './prompt-card'
-import { useParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
 import { CreatePromptButton } from './create-prompt-button'
-import { createEmptyPrompt } from '@/lib/backend/actions/prompt.actions'
-import { useState } from 'react'
+import { createEmptyPrompt } from '@/lib/backend/actions/prompt.actions'  
 
 interface PromptsListProps {
   prompts: PromptOutput[]
