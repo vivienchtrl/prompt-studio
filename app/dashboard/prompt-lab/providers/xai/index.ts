@@ -18,7 +18,7 @@ export const xaiProvider: ProviderImplementation = {
     { id: 'grok-2-vision', name: 'Grok 2 Vision' },
     { id: 'grok-1', name: 'Grok 1' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const client = createOpenAI({
       apiKey,
       baseURL: 'https://api.x.ai/v1',
@@ -27,7 +27,13 @@ export const xaiProvider: ProviderImplementation = {
     return streamText({
       model: client(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

@@ -9,6 +9,7 @@ import { AlertCircle, Zap } from 'lucide-react';
 import PromptEditor from './components/prompt-editor';
 import ModelSelector from './components/model-selector';
 import ResultsDisplay from './components/results-display';
+import { SettingsSelector } from './components/settings-selector';
 
 import { usePromptLab } from './hooks/usePromptLab';
 import { getActiveModels } from './utils/models';
@@ -31,6 +32,7 @@ const PromptLabPage = () => {
       body: JSON.stringify({
         prompt: promptText,
         modelId,
+        config: promptLab.config,
       }),
     });
 
@@ -198,6 +200,11 @@ const PromptLabPage = () => {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-w-fit sm:flex-row sm:items-center sm:justify-end">
+              <SettingsSelector
+                config={promptLab.config}
+                onConfigChange={promptLab.handleConfigChange}
+                disabled={promptLab.isLoading}
+              />
               <Button
                 onClick={handleRunTest}
                 disabled={isRunTestDisabled}

@@ -1,4 +1,4 @@
-import type { ProviderId, ModelId, TokenUsage } from '../types/definitions';
+import type { ProviderId, ModelId, TokenUsage, ModelConfig } from '../types/definitions';
 import { getProviderDefinition } from '../providers';
 
 import type { ProviderRunner } from '../providers/types';
@@ -10,6 +10,7 @@ type RunnerParams = {
   modelId: ModelId;
   prompt: string;
   apiKey: string;
+  config?: ModelConfig;
 };
 
 export async function createPromptLabStream({
@@ -17,6 +18,7 @@ export async function createPromptLabStream({
   modelId,
   prompt,
   apiKey,
+  config,
 }: RunnerParams): Promise<ReadableStream<Uint8Array>> {
   const provider = getProviderDefinition(providerId);
 
@@ -28,6 +30,7 @@ export async function createPromptLabStream({
     modelId,
     prompt,
     apiKey,
+    config,
   });
   const usagePromise = safeGetUsage(streamResult);
 

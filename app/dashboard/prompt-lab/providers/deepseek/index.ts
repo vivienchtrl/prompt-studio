@@ -11,7 +11,7 @@ export const deepseekProvider: ProviderImplementation = {
     { id: 'deepseek-chat', name: 'DeepSeek V3' },
     { id: 'deepseek-reasoner', name: 'DeepSeek R1' },
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const deepseek = createDeepSeek({
       apiKey,
     });
@@ -19,7 +19,13 @@ export const deepseekProvider: ProviderImplementation = {
     return streamText({
       model: deepseek(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

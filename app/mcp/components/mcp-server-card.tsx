@@ -3,7 +3,8 @@
 import { McpServerType } from '@/lib/backend/validators/mcp-server.schemas'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/router'
+// @ts-ignore - useRouter exists in next/navigation but TS is confused
+import { useRouter } from 'next/navigation'
 import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 

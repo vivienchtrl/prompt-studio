@@ -29,12 +29,18 @@ export const openAIProvider: ProviderImplementation = {
     { id: 'o4-mini', name: 'O4 Mini' },
     { id: 'o4-mini-high', name: 'O4 Mini High' },
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const client = createOpenAI({ apiKey });
     return streamText({
       model: client(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

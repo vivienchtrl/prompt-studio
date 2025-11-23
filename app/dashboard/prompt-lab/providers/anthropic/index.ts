@@ -20,12 +20,18 @@ export const anthropicProvider: ProviderImplementation = {
     { id: 'claude-3-5-sonnet-20240620', name: 'Claude 3.5 Sonnet' },
     { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }: ProviderRunParams) => {
+  runStream: async ({ prompt, modelId, apiKey, config }: ProviderRunParams) => {
     const client = createAnthropic({ apiKey });
     return streamText({
       model: client(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

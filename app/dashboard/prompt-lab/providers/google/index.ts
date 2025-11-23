@@ -23,12 +23,18 @@ export const googleProvider: ProviderImplementation = {
     { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
     { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const client = createGoogleGenerativeAI({ apiKey });
     return streamText({
       model: client(normalizeModelId(modelId)),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

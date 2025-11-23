@@ -13,6 +13,7 @@ const Footer = () => {
           <Link href='/prompt-library'>Library</Link>
           <Link href='/studio'>Studio</Link>
           <Link href='/converter'>Converters</Link>
+          <Link href='/mcp'>MCP</Link>
           <Link href='/blog'>Blog</Link>
           <ThemeToggle />
         </div>

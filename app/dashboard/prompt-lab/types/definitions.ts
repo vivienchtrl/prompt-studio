@@ -42,6 +42,19 @@ export interface ModelInfo {
 }
 
 /**
+ * Model configuration parameters
+ */
+export interface ModelConfig {
+  temperature: number;
+  topP: number;
+  topK?: number;
+  maxTokens?: number;
+  seed?: number;
+  presencePenalty?: number;
+  frequencyPenalty?: number;
+}
+
+/**
  * Represents the state of selected models
  * Maps provider IDs to their selected model ID (or null if none selected)
  */

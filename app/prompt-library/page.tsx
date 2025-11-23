@@ -1,10 +1,14 @@
 import { PromptsList } from './components/PromptsList'
 import { LibraryPageSchema } from '@/components/seo/studio/PromptLibrarySchema'
+import { Navbar1 } from '@/components/navigation/nav-bar'
+import { Footer } from '@/components/navigation/footer'
 
 
 export default function PromptsPage() {
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 mt-20">
+    <div className="flex flex-col min-h-screen">
+      <Navbar1 />
+      <main className="flex-grow container mx-auto px-4 py-8">
       <LibraryPageSchema />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
@@ -14,6 +18,8 @@ export default function PromptsPage() {
 
         <PromptsList />
       </div>
+      </main>
+      <Footer />
     </div>
   )
 }

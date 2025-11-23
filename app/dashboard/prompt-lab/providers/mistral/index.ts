@@ -26,12 +26,18 @@ export const mistralProvider: ProviderImplementation = {
     { id: 'mistral-8x7b', name: 'Mistral 8x7B' },
     { id: 'mixtral-8x22b', name: 'Mixtral 8x22B' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const client = createMistral({ apiKey });
     return streamText({
       model: client(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };

@@ -62,6 +62,10 @@ const Navbar1 = ({
       title: "Prompt Converters",
       url: "/converter",
     },
+    {
+      title: "MCP",
+      url: "/mcp",
+    },
   ],
   auth = {
     login: { text: "Log in", url: "/login" },

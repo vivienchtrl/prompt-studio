@@ -6,6 +6,7 @@ import {
   SelectedModels,
   ResultState,
   ModelResult,
+  ModelConfig,
 } from '../types/definitions';
 import {
   initializeSelectedModels,
@@ -21,7 +22,16 @@ export const usePromptLab = (initialPrompt: string = '') => {
   const [selectedModels, setSelectedModels] = useState<SelectedModels>(
     initializeSelectedModels()
   );
-  
+  const [config, setConfig] = useState<ModelConfig>({
+    temperature: 0.7,
+    topP: 1,
+    maxTokens: 2048,
+    topK: undefined,
+    seed: undefined,
+    presencePenalty: 0,
+    frequencyPenalty: 0,
+  });
+
   // Initialize empty results with proper typing
   const createEmptyResults = (): Partial<ResultState> => ({});
   const [results, setResults] = useState<Partial<ResultState>>(createEmptyResults());
@@ -35,6 +45,13 @@ export const usePromptLab = (initialPrompt: string = '') => {
    */
   const handlePromptChange = useCallback((newPrompt: string) => {
     setPrompt(newPrompt);
+  }, []);
+
+  /**
+   * Update model configuration
+   */
+  const handleConfigChange = useCallback((newConfig: Partial<ModelConfig>) => {
+    setConfig(prev => ({ ...prev, ...newConfig }));
   }, []);
 
   /**
@@ -160,6 +177,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
     // State
     prompt,
     selectedModels,
+    config,
     results,
     isLoading,
     activeModels,
@@ -172,6 +190,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
     // Handlers
     handlePromptChange,
     handleModelSelectionChange,
+    handleConfigChange,
 
     // Result management
     initializeTestResults,

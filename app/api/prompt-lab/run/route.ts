@@ -15,6 +15,17 @@ const RunPromptSchema = z.object({
     .string()
     .refine(isValidModelId, 'Unsupported model'),
   prompt: z.string().min(1, 'Prompt is required'),
+  config: z
+    .object({
+      temperature: z.number().min(0).max(2),
+      topP: z.number().min(0).max(1),
+      maxTokens: z.number().positive().optional(),
+      topK: z.number().positive().optional(),
+      seed: z.number().int().optional(),
+      presencePenalty: z.number().min(-2).max(2).optional(),
+      frequencyPenalty: z.number().min(-2).max(2).optional(),
+    })
+    .optional(),
 });
 
 export const runtime = 'nodejs';
@@ -22,7 +33,11 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const { modelId: rawModelId, prompt } = RunPromptSchema.parse(payload);
+    const {
+      modelId: rawModelId,
+      prompt,
+      config,
+    } = RunPromptSchema.parse(payload);
 
     const modelId = rawModelId as ModelId;
     const providerId = getProviderFromModelId(modelId) as ProviderId | undefined;
@@ -48,6 +63,7 @@ export async function POST(request: Request) {
       modelId,
       prompt,
       apiKey,
+      config,
     });
 
     return new Response(stream, {

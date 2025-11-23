@@ -1,6 +1,8 @@
 import { McpServerService } from '@/lib/backend/services/mcp-server.service'
 import { PaginationControl } from '@/components/shared/PaginationControl'
 import { McpServerList } from './components/mcp-server-list'
+import { Navbar1 } from '@/components/navigation/nav-bar'
+import { Footer } from '@/components/navigation/footer'
 
 type McpLibraryPageProps = {
   searchParams: Promise<{
@@ -14,7 +16,7 @@ export default async function McpLibraryPage({ searchParams }: McpLibraryPagePro
   const { category, search, page } = await searchParams
   
   const currentPage = Number(page) || 1
-  const limit = 12
+  const limit = 150
   
   const service = new McpServerService()
   const { data: servers, total } = await service.findPaginated(currentPage, limit, category, search)
@@ -22,7 +24,9 @@ export default async function McpLibraryPage({ searchParams }: McpLibraryPagePro
   const totalPages = Math.ceil(total / limit)
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="flex flex-col min-h-screen">
+      <Navbar1 />
+      <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <h1 className="text-4xl font-bold">MCP Library</h1>
         <div className="text-muted-foreground">
@@ -40,6 +44,8 @@ export default async function McpLibraryPage({ searchParams }: McpLibraryPagePro
           searchParams={{ category, search }}
         />
       )}
+      </main>
+      <Footer />
     </div>
   )
 }

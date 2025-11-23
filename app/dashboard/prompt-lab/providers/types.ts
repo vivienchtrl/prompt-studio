@@ -1,4 +1,5 @@
 import type { StreamTextResult } from 'ai';
+import type { ModelConfig } from '../types/definitions';
 
 export interface ProviderModel {
   id: string;
@@ -9,6 +10,7 @@ export interface ProviderRunParams {
   prompt: string;
   modelId: string;
   apiKey: string;
+  config?: ModelConfig;
 }
 
 export type ProviderRunner = (

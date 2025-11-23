@@ -21,12 +21,18 @@ export const cohereProvider: ProviderImplementation = {
     { id: 'cohere.command-r', name: 'Command R' },
     { id: 'cohere.command', name: 'Command' }
   ],
-  runStream: async ({ prompt, modelId, apiKey }) => {
+  runStream: async ({ prompt, modelId, apiKey, config }) => {
     const client = createCohere({ apiKey });
     return streamText({
       model: client(modelId),
       prompt,
-      temperature: DEFAULT_TEMPERATURE,
+      temperature: config?.temperature ?? DEFAULT_TEMPERATURE,
+      topP: config?.topP,
+      topK: config?.topK,
+      presencePenalty: config?.presencePenalty,
+      frequencyPenalty: config?.frequencyPenalty,
+      maxOutputTokens: config?.maxTokens,
+      seed: config?.seed,
     });
   },
 };
