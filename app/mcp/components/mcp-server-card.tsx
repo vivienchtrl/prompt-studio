@@ -3,8 +3,7 @@
 import { McpServerType } from '@/lib/backend/validators/mcp-server.schemas'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-// @ts-ignore - useRouter exists in next/navigation but TS is confused
-import { useRouter } from 'next/navigation'
+import { useCallback } from 'react'
 import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -13,11 +12,9 @@ interface McpServerCardProps {
 }
 
 export function McpServerCard({ server }: McpServerCardProps) {
-  const router = useRouter()
-
-  const handleCardClick = () => {
-    router.push(`/mcp/${server.slug || server.id}`)
-  }
+  const handleCardClick = useCallback(() => {
+    window.location.href = `/mcp/${server.slug || server.id}`
+  }, [server.slug, server.id])
 
   return (
     <Card 
