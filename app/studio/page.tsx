@@ -44,7 +44,7 @@ function EditorPageContent() {
                   <div className="mt-4">
                     <Button asChild className="w-full">
                       <Link
-                        href="/auth/login"
+                        href="/login"
                         aria-label="Log in to use AI prompt generation"
                         className="block w-full text-center text-sm font-semibold"
                       >
