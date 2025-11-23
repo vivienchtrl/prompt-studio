@@ -1,9 +1,8 @@
-import MetadataRoute from 'next'
 import { db } from '@/db'
 import { mcpServers, templates } from '@/db/schema'
 import { isNotNull } from 'drizzle-orm'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://prompt-studio.com'
 
   // Static routes
@@ -34,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/converter/yaml-to-xml',
   ]
 
-  const staticEntries: MetadataRoute.Sitemap = routes.map((route) => ({
+  const staticEntries = routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
@@ -49,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   .from(mcpServers)
   .where(isNotNull(mcpServers.slug))
 
-  const mcpEntries: MetadataRoute.Sitemap = mcpServerEntries
+  const mcpEntries = mcpServerEntries
     .filter((server) => server.slug)
     .map((server) => ({
       url: `${baseUrl}/mcp/${server.slug}`,
@@ -66,7 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   .from(templates)
   .where(isNotNull(templates.slug))
 
-  const promptEntries: MetadataRoute.Sitemap = templateEntries
+  const promptEntries = templateEntries
     .filter((template) => template.slug)
     .map((template) => ({
       url: `${baseUrl}/prompt-library/${template.slug}`,
@@ -77,4 +76,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [...staticEntries, ...mcpEntries, ...promptEntries]
 }
-

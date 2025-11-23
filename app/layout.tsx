@@ -1,4 +1,3 @@
-import Metadata from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -15,7 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Prompt Studio - Build Prompt That Performs 10x Better",
   description: "Prompt Studio is the place to build, monitor, and improve your prompts to make sure they output 10x better.",
 };

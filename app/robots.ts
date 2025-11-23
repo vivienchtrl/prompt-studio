@@ -1,6 +1,4 @@
-import MetadataRoute from 'next'
-
-export default function robots(): MetadataRoute.Robots {
+export default function robots() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://prompt-studio.com'
   
   return {
@@ -12,4 +10,3 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
-
