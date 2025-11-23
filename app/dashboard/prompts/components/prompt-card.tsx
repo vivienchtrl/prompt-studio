@@ -18,14 +18,12 @@ import {
 } from '@/components/ui/alert-dialog'
 import { deletePromptAction } from '@/lib/backend/actions/prompt.actions'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
 
 interface PromptCardProps {
   prompt: PromptOutput
 }
 
 export function PromptCard({ prompt }: PromptCardProps) {
-  const router = useRouter()
   const truncatedContent = prompt.content.substring(0, 150) + (prompt.content.length > 150 ? '...' : '')
 
   const handleDelete = async () => {
@@ -33,7 +31,6 @@ export function PromptCard({ prompt }: PromptCardProps) {
       const result = await deletePromptAction(prompt.id)
       if (result.success) {
         toast.success('Prompt deleted successfully')
-        router.refresh()
       } else {
         toast.error('Failed to delete prompt')
       }

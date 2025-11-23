@@ -1,5 +1,4 @@
 import { McpServerService } from '@/lib/backend/services/mcp-server.service'
-import { notFound } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
@@ -9,6 +8,7 @@ import { MarkdownProcessor } from '../components/MarkdownProcessor'
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
 import { Footer } from '@/components/navigation/footer'
 import { Navbar1 } from '@/components/navigation/nav-bar'
+import { notFound } from 'next/dist/client/components/not-found'
 
 type McpServerDetailsPageProps = {
   params: Promise<{
@@ -22,7 +22,7 @@ export default async function McpServerDetailsPage({ params }: McpServerDetailsP
   const server = await service.findBySlug(slug)
 
   if (!server) {
-    notFound()
+    return notFound()
   }
 
   // Fetch related MCP servers (random ones for now as requested)
@@ -31,7 +31,7 @@ export default async function McpServerDetailsPage({ params }: McpServerDetailsP
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
     { name: 'MCP Servers', url: '/mcp' },
-    { name: server.name, url: `/mcp/${slug}` }
+    { name: server?.name || '', url: `/mcp/${slug}` }
   ]
 
   return (

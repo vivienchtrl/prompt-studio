@@ -3,7 +3,7 @@
 import { McpServerType } from '@/lib/backend/validators/mcp-server.schemas'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
