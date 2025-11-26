@@ -22,7 +22,7 @@ export class McpServerRepository {
     limit: number = 12, 
     category?: string, 
     search?: string
-  ): Promise<{ data: typeof mcpServers.$inferSelect[], total: number }> {
+  ) {
     const offset = (page - 1) * limit
     
     // Build where clause
@@ -45,9 +45,19 @@ export class McpServerRepository {
 
     const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined
 
-    // Get data
+    // Get data - optimisé pour n'exclure que les champs lourds (readme, about, features, faq)
     const data = await db
-      .select()
+      .select({
+        id: mcpServers.id,
+        name: mcpServers.name,
+        description: mcpServers.description,
+        githubUrl: mcpServers.githubUrl,
+        category: mcpServers.category,
+        tags: mcpServers.tags,
+        slug: mcpServers.slug,
+        createdAt: mcpServers.createdAt,
+        updatedAt: mcpServers.updatedAt,
+      })
       .from(mcpServers)
       .where(whereClause)
       .limit(limit)
@@ -88,9 +98,16 @@ export class McpServerRepository {
     return server
   }
 
-  async findRandom(limit: number = 3): Promise<typeof mcpServers.$inferSelect[]> {
+  async findRandom(limit: number = 3) {
     return await db
-      .select()
+      .select({
+        id: mcpServers.id,
+        name: mcpServers.name,
+        description: mcpServers.description,
+        slug: mcpServers.slug,
+        category: mcpServers.category,
+        // Excluding heavy fields
+      })
       .from(mcpServers)
       .orderBy(sql`RANDOM()`)
       .limit(limit)
