@@ -25,11 +25,12 @@ export function MarkdownProcessor({
           ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 text-foreground" {...props} />,
           ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-4 text-foreground" {...props} />,
           li: ({node, ...props}) => <li className="mb-1" {...props} />,
+          pre: ({children}) => <>{children}</>,
           code: ({className, children, ...props}: ComponentPropsWithoutRef<'code'>) => {
             const match = /language-(\w+)/.exec(className || '')
             const isInline = !match && !String(children).includes('\n')
             return !isInline ? (
-              <pre className="bg-muted p-4 rounded-md overflow-x-auto mb-4 border border-border">
+              <pre className="bg-muted p-4 rounded-md mb-4 border border-border overflow-x-auto">
                 <code className={className} {...props}>
                   {children}
                 </code>
@@ -55,7 +56,7 @@ export function MarkdownProcessor({
             <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground" {...props} />
           ),
           blockquote: ({node, ...props}) => (
-            <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4" {...props} />
+            <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground" {...props} />
           ),
           img: ({node, ...props}) => (
             // eslint-disable-next-line @next/next/no-img-element
