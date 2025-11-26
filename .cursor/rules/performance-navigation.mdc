@@ -1,0 +1,67 @@
+---
+description: Guidelines universelles pour la performance, la navigation et l'architecture Next.js (Server Components & Suspense).
+globs: ["app/**/*", "lib/**/*", "middleware.ts", "actions/**/*"]
+alwaysApply: true
+---
+
+# Performance & Navigation Guidelines
+
+Ce document établit les principes fondamentaux pour garantir une application performante, réactive et scalable.
+
+## 1. Architecture de Chargement de Données (Data Fetching Strategy)
+
+### Principe : Parallélisation par Défaut
+Ne jamais exécuter séquentiellement des requêtes asynchrones indépendantes.
+
+**Règle** :
+- Utiliser `Promise.all()` (ou `Promise.allSettled()`) au niveau le plus haut possible (Page ou Layout Server Component) pour initier toutes les lectures de données indépendantes simultanément.
+- Éviter le pattern "Waterfall" (attendre A pour lancer B).
+
+### Principe : Streaming & Feedback Instantané
+L'interface utilisateur ne doit jamais être bloquée par le chargement des données.
+
+**Règle** :
+- La `page.tsx` (Server Component) ne doit contenir que la structure statique ("Shell") de la page.
+- **Tout composant nécessitant des données asynchrones doit être :**
+    1.  Isolé dans son propre fichier composant.
+    2.  Enveloppé dans une boundary `<Suspense>` avec un `fallback` (Skeleton) approprié dans la page parente.
+
+## 2. Gestion de l'État Serveur & Authentification
+
+### Principe : Request Memoization (Dé-duplication)
+Dans une architecture Server Components, un même utilitaire (ex: récupération de l'utilisateur courant ou des settings globaux) peut être appelé plusieurs fois dans l'arbre de composants.
+
+**Règle** :
+- Toute fonction utilitaire d'accès aux données de contexte (Session, Config, Feature Flags) doit être enveloppée avec `cache()` de React.
+- Cela garantit un seul appel à la base de données/API par requête HTTP, quel que soit le nombre de consommateurs.
+
+## 3. Optimisation du Middleware
+
+### Principe : TTFB Minimal (Time To First Byte)
+Le middleware est le goulot d'étranglement critique car il bloque chaque requête.
+
+**Règle** :
+- **Single Pass** : Instancier les clients externes (DB, Auth) une seule fois.
+- **No Business Logic** : Interdire toute logique métier complexe ou requête de données lourde dans le middleware.
+- **Scope Limité** : Se limiter strictement à la validation de session (cookies) et au routage (redirections).
+
+## 4. Optimisation des Client Components (Code Splitting)
+
+### Principe : Réduction du Bundle Initial
+Les pages interactives lourdes (Dashboards complexes, éditeurs) ne doivent pas pénaliser le chargement initial.
+
+**Règle** :
+- Pour les pages complexes entièrement "Client-Side" (`'use client'`), utiliser le **Lazy Loading** via `next/dynamic`.
+- Séparer la logique lourde dans un composant dédié (ex: `FeatureClient.tsx`) et ne laisser que le chargement dynamique dans la `page.tsx`.
+
+## 5. Mutations & Invalidations (Server Actions)
+
+### Principe : Optimistic UI & Cache Revalidation
+Les actions utilisateur ne doivent pas nécessiter un rafraîchissement complet de la page sauf si nécessaire.
+
+**Règle** :
+- Utiliser `revalidatePath()` de manière chirurgicale : cibler uniquement les routes affectées par la mutation.
+- Préférer `revalidateTag()` si les données sont partagées entre plusieurs routes.
+- Utiliser le pattern PRG (Post-Redirect-Get) pour les créations de ressources : Mutation -> Revalidation -> Redirection.
+alwaysApply: true
+---

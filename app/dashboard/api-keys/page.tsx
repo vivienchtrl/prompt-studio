@@ -1,29 +1,13 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { fetchUserApiKeys } from './actions/api-key-actions'
-import { ApiKeysClient, ApiKeyState } from './components/api-keys-client'
-import { PROVIDERS } from '@/app/dashboard/prompt-lab/types/definitions'
-import { ApiKeyOutput } from '@/lib/backend/types/api-key'
+import { ApiKeysList } from './components/api-keys-list'
+import { ApiKeysSkeleton } from './components/api-keys-skeleton'
 
-export default async function ApiKeysPage() {
-  const result = await fetchUserApiKeys()
-
-  const initialApiKeys: Record<string, ApiKeyState> = {}
-  PROVIDERS.forEach((provider) => {
-    const existingKey = (result.data as ApiKeyOutput[])?.find((k) => k.providerId === provider.id)
-    initialApiKeys[provider.id] = {
-      value: existingKey ? '••••••••••••••••' : '',
-      isVisible: false,
-      isSaving: false,
-      isSaved: !!existingKey,
-      savedApiKeyId: existingKey?.id,
-    }
-  })
-
+export default function ApiKeysPage() {
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Cette partie statique s'affiche immédiatement */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">API Keys</h1>
         <p className="text-muted-foreground">
@@ -31,7 +15,6 @@ export default async function ApiKeysPage() {
         </p>
       </div>
 
-      {/* Info Alert */}
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
@@ -39,7 +22,10 @@ export default async function ApiKeysPage() {
         </AlertDescription>
       </Alert>
 
-      <ApiKeysClient initialApiKeys={initialApiKeys} />
+      {/* Le chargement des données est isolé ici avec un Skeleton */}
+      <Suspense fallback={<ApiKeysSkeleton />}>
+        <ApiKeysList />
+      </Suspense>
     </div>
   )
 }

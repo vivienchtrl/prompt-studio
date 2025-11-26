@@ -12,8 +12,11 @@ import { PromptOutput, TemplateOutput } from '@/lib/backend/types'
 import { Button } from '@/components/ui/button'
 
 export default async function DashboardPage() {
-  const promptsResponse = await listPromptsAction()
-  const templatesResponse = await listTemplatesAction()
+  // Lancement des requêtes en parallèle
+  const [promptsResponse, templatesResponse] = await Promise.all([
+    listPromptsAction(),
+    listTemplatesAction()
+  ])
 
   const prompts =
     promptsResponse.success && promptsResponse.data

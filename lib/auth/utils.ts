@@ -1,12 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { User } from '@supabase/supabase-js';
+import { cache } from 'react';
 
 /**
  * A server-side utility to get the authenticated user.
  * Throws an error if the user is not authenticated.
- * @returns {Promise<User>} The authenticated user object.
+ * Cached per request to avoid duplicate DB calls.
  */
-export async function getAuthenticatedUser(): Promise<User> {
+export const getAuthenticatedUser = cache(async (): Promise<User> => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -15,4 +16,4 @@ export async function getAuthenticatedUser(): Promise<User> {
   }
 
   return user;
-}
+});
