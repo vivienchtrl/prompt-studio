@@ -114,10 +114,6 @@ export const markdownToJson = (md: string): Record<string, unknown> => {
   // Note: 'obj' property in stack item would be redundant if we have reference to parent+key, 
   // but accessing parent[key] is safer to allow type changes (obj -> array -> string).
   
-  const stack: { level: number; container: Record<string, unknown>; key?: string }[] = [
-    { level: 1, container: { root }, key: 'root' }
-  ];
-  
   // We actually want stack[0] to represent the context where we add top-level keys.
   // Our generator creates ## Key (Level 2).
   // So we initialize stack with a virtual level 1 context that points to 'root'.

@@ -50,7 +50,6 @@ export async function decrypt(encryptedText: string): Promise<string> {
 
     return decrypted.toString('utf8');
   } catch (error) {
-    console.error("Decryption failed:", error);
     throw new Error("Failed to decrypt data.");
   }
 }

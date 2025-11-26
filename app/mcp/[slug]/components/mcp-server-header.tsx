@@ -61,7 +61,7 @@ export function McpServerHeader({ server, url }: McpServerHeaderProps) {
         <ShareButtons 
           url={url} 
           title={server.name} 
-          description={server.description} 
+          description={server.description || undefined} 
         />
       </div>
 
