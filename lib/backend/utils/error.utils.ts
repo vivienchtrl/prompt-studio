@@ -18,6 +18,7 @@ export function handleError(error: unknown): ApiResponse {
 
   if (error instanceof Error) {
     // Don't expose internal error details to client
+    // eslint-disable-next-line no-console
     console.error('[Backend Error]', error)
     return {
       success: false,
@@ -28,6 +29,7 @@ export function handleError(error: unknown): ApiResponse {
     }
   }
 
+  // eslint-disable-next-line no-console
   console.error('[Unknown Error]', error)
   return {
     success: false,
@@ -37,5 +39,3 @@ export function handleError(error: unknown): ApiResponse {
     },
   }
 }
-
-

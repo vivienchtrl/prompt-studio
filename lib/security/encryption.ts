@@ -49,7 +49,7 @@ export async function decrypt(encryptedText: string): Promise<string> {
     const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 
     return decrypted.toString('utf8');
-  } catch (error) {
+  } catch {
     throw new Error("Failed to decrypt data.");
   }
 }

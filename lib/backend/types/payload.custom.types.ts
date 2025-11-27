@@ -35,7 +35,7 @@ export interface Post {
   publishedDate?: string;
   author?: string | User;
   coverImage?: string | Media;
-  content?: any; // RichText structure can be complex
+  content?: Record<string, unknown>; // RichText structure
   category?: string | Category;
   tags?: (string | Tag)[];
   isPillar?: boolean;
