@@ -15,6 +15,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { GoogleAdsense } from "@/components/google-adsense";
+
 export const metadata = {
   title: "Prompt Studio - Build Prompt That Performs 10x Better",
   description: "Prompt Studio is the place to build, monitor, and improve your prompts to make sure they output 10x better.",
@@ -44,6 +46,7 @@ export default function RootLayout({
       </body>
       {/* Ajoute le composant ici avec ton ID */}
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
+      <GoogleAdsense pId="7048367176497618" />
     </html>
   );
 }

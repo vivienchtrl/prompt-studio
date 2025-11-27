@@ -1,5 +1,3 @@
-import { GoogleAdsense } from "@/components/google-adsense";
-
 export default function McpLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function McpLayout({
 }) {
   return (
     <>
-      <GoogleAdsense pId="7048367176497618" />
       {children}
     </>
   );
