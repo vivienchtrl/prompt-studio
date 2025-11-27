@@ -29,6 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <GoogleAdsense pId="7048367176497618" />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -44,9 +48,6 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
       </body>
-      {/* Ajoute le composant ici avec ton ID */}
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
-      <GoogleAdsense pId="7048367176497618" />
     </html>
   );
 }
