@@ -2,6 +2,15 @@ import type { CollectionConfig } from 'payload'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
+  access: {
+    read: () => true, // Public read access (for your blog frontend)
+    create: ({ req: { user } }) => {
+      // Allow creation only if user is logged in
+      return Boolean(user) 
+    },
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => Boolean(user),
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'status'],
