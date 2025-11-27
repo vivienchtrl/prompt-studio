@@ -31,6 +31,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <GoogleAdsense pId="7048367176497618" />
+        <meta name="google-adsense-account" content="ca-pub-7048367176497618" />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
       </head>
       <body
