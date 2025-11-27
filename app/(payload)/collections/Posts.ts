@@ -2,6 +2,9 @@ import type { CollectionConfig } from 'payload'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
+  versions: {
+    drafts: true,
+  },
   access: {
     read: () => true, // Public read access (for your blog frontend)
     create: ({ req: { user } }) => {
