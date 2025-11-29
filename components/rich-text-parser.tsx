@@ -284,14 +284,22 @@ const getNodeText = (node: any): string => {
   return ''
 }
 
-export const extractHeadings = (content: any) => {
+interface LexicalNode {
+  type: string
+  tag?: string
+  text?: string
+  children?: LexicalNode[]
+  [key: string]: unknown
+}
+
+export const extractHeadings = (content: { root?: { children?: LexicalNode[] } } | null | undefined) => {
   const headings: { id: string; text: string; level: number }[] = []
 
   if (!content || !content.root || !content.root.children) return headings
 
-  const traverse = (nodes: any[]) => {
+  const traverse = (nodes: LexicalNode[]) => {
     nodes.forEach((node) => {
-      if (node.type === 'heading') {
+      if (node.type === 'heading' && typeof node.tag === 'string') {
         const text = getNodeText(node)
         const level = parseInt(node.tag.replace('h', ''))
         headings.push({

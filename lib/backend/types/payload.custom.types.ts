@@ -77,5 +77,5 @@ export interface Post {
   howToData?: HowToData;
   enableVideo?: boolean;
   videoData?: VideoData;
-  customSchema?: Record<string, any>; // Catch-all type
+  customSchema?: Record<string, unknown>; // Catch-all type
 }
