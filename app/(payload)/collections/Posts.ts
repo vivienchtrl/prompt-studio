@@ -5,6 +5,22 @@ export const Posts: CollectionConfig = {
   versions: {
     drafts: true,
   },
+  hooks: {
+    beforeChange: [
+      ({ data, originalDoc }) => {
+        const nextStatus = data._status || originalDoc?._status
+
+        if (nextStatus === 'published') {
+          const existingDate = data.publishedDate || originalDoc?.publishedDate
+
+          if (!existingDate) {
+            data.publishedDate = new Date().toISOString()
+          }
+        }
+        return data
+      },
+    ],
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'status'],

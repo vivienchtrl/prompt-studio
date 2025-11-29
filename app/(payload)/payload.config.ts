@@ -1,5 +1,6 @@
 import sharp from 'sharp'
-import { lexicalEditor, BlocksFeature, CodeBlock } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, BlocksFeature, FixedToolbarFeature, InlineToolbarFeature, HorizontalRuleFeature } from '@payloadcms/richtext-lexical'
+import { EXPERIMENTAL_TableFeature } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 import { Media } from './collections/Media'
@@ -9,6 +10,7 @@ import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
 import { CallToAction } from './blocks/CallToAction'
 import { Mermaid } from './blocks/Mermaid'
+import { CodeBlock } from './blocks/CodeBlock'
 
 // 1. Import the plugin and adapter
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -17,8 +19,12 @@ export default buildConfig({
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
+      EXPERIMENTAL_TableFeature(),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+      HorizontalRuleFeature(),
       BlocksFeature({
-        blocks: [CallToAction, Mermaid, CodeBlock()],
+        blocks: [CallToAction, Mermaid, CodeBlock],
       }),
     ],
   }),

@@ -312,8 +312,10 @@ const serialize = (children: LexicalNode[]): React.ReactNode[] => {
         )
 
       case 'paragraph':
-      default:
         return <p key={i}>{serialize(node.children || [])}</p>
+        
+      default:
+        return <Fragment key={i}>{serialize(node.children || [])}</Fragment>
     }
   })
 }
