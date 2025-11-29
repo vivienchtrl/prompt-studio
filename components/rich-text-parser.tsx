@@ -7,8 +7,41 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { MermaidRenderer } from '@/components/shared/MermaidRenderer'
 import { Sparkles } from 'lucide-react'
 
+interface LexicalNode {
+  type: string
+  format?: number
+  text?: string
+  tag?: string
+  children?: LexicalNode[]
+  listType?: string
+  url?: string
+  newTab?: boolean
+  value?: {
+    url: string
+    alt?: string
+  }
+  fields?: {
+    blockType: string
+    type?: string
+    title?: string
+    description?: string
+    variant?: string
+    url?: string
+    text?: string
+    code?: string
+  }
+  colSpan?: number
+  rowSpan?: number
+  header?: boolean
+  [key: string]: unknown
+}
+
 type RichTextProps = {
-  content: any
+  content: {
+    root?: {
+      children: LexicalNode[]
+    }
+  } | null | undefined
   className?: string
 }
 
@@ -41,7 +74,7 @@ export const generateId = (text: string) => {
     .replace(/(^-|-$)+/g, '')
 }
 
-const serialize = (children: any[]): React.ReactNode[] => {
+const serialize = (children: LexicalNode[]): React.ReactNode[] => {
   if (!children || !Array.isArray(children)) {
     return []
   }
@@ -50,15 +83,15 @@ const serialize = (children: any[]): React.ReactNode[] => {
     if (node.type === 'text') {
       let text = <>{node.text}</>
 
-      if (node.format & IS_BOLD) {
+      if ((node.format || 0) & IS_BOLD) {
         text = <strong key={i}>{text}</strong>
       }
 
-      if (node.format & IS_ITALIC) {
+      if ((node.format || 0) & IS_ITALIC) {
         text = <em key={i}>{text}</em>
       }
 
-      if (node.format & IS_STRIKETHROUGH) {
+      if ((node.format || 0) & IS_STRIKETHROUGH) {
         text = (
           <span style={{ textDecoration: 'line-through' }} key={i}>
             {text}
@@ -66,7 +99,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
         )
       }
 
-      if (node.format & IS_UNDERLINE) {
+      if ((node.format || 0) & IS_UNDERLINE) {
         text = (
           <span style={{ textDecoration: 'underline' }} key={i}>
             {text}
@@ -74,15 +107,15 @@ const serialize = (children: any[]): React.ReactNode[] => {
         )
       }
 
-      if (node.format & IS_CODE) {
+      if ((node.format || 0) & IS_CODE) {
         text = <code key={i}>{text}</code>
       }
 
-      if (node.format & IS_SUBSCRIPT) {
+      if ((node.format || 0) & IS_SUBSCRIPT) {
         text = <sub key={i}>{text}</sub>
       }
 
-      if (node.format & IS_SUPERSCRIPT) {
+      if ((node.format || 0) & IS_SUPERSCRIPT) {
         text = <sup key={i}>{text}</sup>
       }
 
@@ -100,66 +133,66 @@ const serialize = (children: any[]): React.ReactNode[] => {
          return React.createElement(
              Tag,
              { key: i, id: generateId(getNodeText(node)) },
-             serialize(node.children)
+             serialize(node.children || [])
          )
       
       // Fallback for direct types if any
       case 'h1':
         return (
           <h1 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h1>
         )
       case 'h2':
         return (
           <h2 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h2>
         )
       case 'h3':
         return (
           <h3 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h3>
         )
       case 'h4':
         return (
           <h4 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h4>
         )
       case 'h5':
         return (
           <h5 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h5>
         )
       case 'h6':
         return (
           <h6 key={i} id={generateId(getNodeText(node))}>
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </h6>
         )
         
       case 'quote':
-        return <blockquote key={i}>{serialize(node.children)}</blockquote>
+        return <blockquote key={i}>{serialize(node.children || [])}</blockquote>
         
       case 'list': 
         const ListTag = node.listType === 'number' ? 'ol' : 'ul'
-        return <ListTag key={i}>{serialize(node.children)}</ListTag>
+        return <ListTag key={i}>{serialize(node.children || [])}</ListTag>
         
       case 'listitem':
-        return <li key={i}>{serialize(node.children)}</li>
+        return <li key={i}>{serialize(node.children || [])}</li>
         
       case 'link':
         return (
           <Link
-            href={node.url}
+            href={node.url || ''}
             key={i}
             target={node.newTab ? '_blank' : undefined}
             className="text-primary hover:underline"
           >
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </Link>
         )
         
@@ -171,7 +204,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
         return (
             <div key={i} className="my-8 relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
                  <Image
-                    src={value.url}
+                    src={value.url || ''}
                     alt={value.alt || ''}
                     fill
                     className="object-cover"
@@ -201,7 +234,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
                       asChild
                       className="w-full sm:w-auto"
                     >
-                      <Link href={fields.url} target="_blank" rel="noopener noreferrer">
+                      <Link href={fields.url || ''} target="_blank" rel="noopener noreferrer">
                         {fields.text}
                       </Link>
                     </Button>
@@ -217,7 +250,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
                  variant={fields.variant === 'outline' ? 'outline' : (fields.variant === 'secondary' ? 'secondary' : (fields.variant === 'ghost' ? 'ghost' : 'default'))}
                  asChild
                >
-                 <Link href={fields.url} target="_blank" rel="noopener noreferrer">
+                 <Link href={fields.url || ''} target="_blank" rel="noopener noreferrer">
                    {fields.text}
                  </Link>
                </Button>
@@ -226,10 +259,10 @@ const serialize = (children: any[]): React.ReactNode[] => {
         }
         
         if (fields?.blockType === 'mermaid') {
-            return <MermaidRenderer key={i} code={fields.code} />
+            return <MermaidRenderer key={i} code={fields.code || ''} />
         }
 
-        return <div key={i}>{serialize(node.children)}</div>
+        return <div key={i}>{serialize(node.children || [])}</div>
       }
 
       case 'table':
@@ -237,7 +270,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
           <div key={i} className="my-6 w-full overflow-y-auto">
             <table className="w-full border-collapse border border-border">
               <tbody>
-                {serialize(node.children)}
+                {serialize(node.children || [])}
               </tbody>
             </table>
           </div>
@@ -246,7 +279,7 @@ const serialize = (children: any[]): React.ReactNode[] => {
       case 'tablerow':
         return (
           <tr key={i} className="m-0 border-t p-0 even:bg-muted/50">
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </tr>
         )
 
@@ -262,34 +295,26 @@ const serialize = (children: any[]): React.ReactNode[] => {
             colSpan={node.colSpan}
             rowSpan={node.rowSpan}
           >
-            {serialize(node.children)}
+            {serialize(node.children || [])}
           </CellTag>
         )
 
       case 'paragraph':
       default:
-        return <p key={i}>{serialize(node.children)}</p>
+        return <p key={i}>{serialize(node.children || [])}</p>
     }
   })
 }
 
 // Helper to extract text from a node
-const getNodeText = (node: any): string => {
+const getNodeText = (node: LexicalNode): string => {
   if (node.type === 'text') {
-    return node.text
+    return node.text || ''
   }
   if (node.children) {
-    return node.children.map((child: any) => getNodeText(child)).join('')
+    return node.children.map((child) => getNodeText(child)).join('')
   }
   return ''
-}
-
-interface LexicalNode {
-  type: string
-  tag?: string
-  text?: string
-  children?: LexicalNode[]
-  [key: string]: unknown
 }
 
 export const extractHeadings = (content: { root?: { children?: LexicalNode[] } } | null | undefined) => {
