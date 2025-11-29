@@ -1,5 +1,5 @@
 import sharp from 'sharp'
-import { lexicalEditor, BlocksFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, BlocksFeature, CodeBlock } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 import { Media } from './collections/Media'
@@ -18,7 +18,7 @@ export default buildConfig({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
       BlocksFeature({
-        blocks: [CallToAction, Mermaid],
+        blocks: [CallToAction, Mermaid, CodeBlock()],
       }),
     ],
   }),

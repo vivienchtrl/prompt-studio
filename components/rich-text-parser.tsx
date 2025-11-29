@@ -29,10 +29,12 @@ interface LexicalNode {
     url?: string
     text?: string
     code?: string
+    language?: string
   }
   colSpan?: number
   rowSpan?: number
   header?: boolean
+  language?: string
   [key: string]: unknown
 }
 
@@ -256,6 +258,16 @@ const serialize = (children: LexicalNode[]): React.ReactNode[] => {
                </Button>
              </div>
            )
+        }
+        
+        if (fields?.blockType === 'Code') {
+          return (
+            <pre key={i} className="my-6 overflow-x-auto rounded-lg bg-muted p-4">
+              <code className={fields.language ? `language-${fields.language}` : ''}>
+                {fields.code}
+              </code>
+            </pre>
+          )
         }
         
         if (fields?.blockType === 'mermaid') {
