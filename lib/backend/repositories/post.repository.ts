@@ -2,6 +2,21 @@ import { db } from '@/db'
 import { sql } from 'drizzle-orm'
 import { Post } from '@/lib/backend/types/payload.custom.types'
 
+// Type definitions for raw database rows to avoid 'any'
+interface RawPostRow {
+  id: string
+  title: string
+  slug: string
+  published_date: string
+  content?: Record<string, unknown>
+  category_id?: string
+  cover_image_url?: string
+  cover_image_alt?: string
+  author_name?: string
+  category_title?: string
+  category_slug?: string
+}
+
 export class PostRepository {
   async findAll({
     page = 1,
@@ -15,17 +30,14 @@ export class PostRepository {
     const offset = (page - 1) * limit
 
     // Base query conditions
-    let whereClause = sql`p."_status" = 'published'`
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const whereClause = sql`p."_status" = 'published'`
     
     if (categorySlug) {
-       // Join logic would be needed for strict filtering by slug, simpler to do in main query or ignore for MVP
-       // For now we assume if categorySlug is passed, we might need a join.
-       // Let's keep it simple: this query gets ALL published posts first.
+       // Logic for category filtering would go here
     }
 
     // Main Query
-    // We assume standard Payload naming conventions for columns (snake_case of field names + _id for relations)
-    // FIXED: Use u.email instead of u.name as Payload users table doesn't have name by default
     const rows = await db.execute(sql`
       SELECT 
         p.id, 
@@ -58,16 +70,16 @@ export class PostRepository {
     const totalDocs = Number(countResult[0].count)
 
     // Map raw DB rows to Post type
-    const docs = rows.map((row: any) => ({
+    const docs = (rows as unknown as RawPostRow[]).map((row) => ({
       id: row.id,
       title: row.title,
       slug: row.slug,
       publishedDate: row.published_date,
       content: row.content, 
-      author: { name: row.author_name },
-      category: row.category_id ? { title: row.category_title, slug: row.category_slug } : undefined,
-      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt } : undefined,
-      _status: 'published',
+      author: { name: row.author_name || '' },
+      category: row.category_id ? { title: row.category_title || '', slug: row.category_slug || '' } : undefined,
+      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt || '' } : undefined,
+      _status: 'published' as const,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
@@ -104,7 +116,7 @@ export class PostRepository {
       return null
     }
 
-    const row = rows[0] as any
+    const row = rows[0] as unknown as RawPostRow
 
     return {
       id: row.id,
@@ -112,9 +124,9 @@ export class PostRepository {
       slug: row.slug,
       publishedDate: row.published_date,
       content: row.content,
-      author: { name: row.author_name },
-      category: { title: row.category_title, slug: row.category_slug },
-      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt } : undefined,
+      author: { name: row.author_name || '' },
+      category: { title: row.category_title || '', slug: row.category_slug || '' },
+      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt || '' } : undefined,
       _status: 'published',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -142,15 +154,15 @@ export class PostRepository {
       LIMIT ${limit}
     `)
 
-    return rows.map((row: any) => ({
+    return (rows as unknown as RawPostRow[]).map((row) => ({
       id: row.id,
       title: row.title,
       slug: row.slug,
       publishedDate: row.published_date,
       content: {}, 
-      author: { name: row.author_name },
-      category: { title: row.category_title, slug: row.category_slug },
-      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt } : undefined,
+      author: { name: row.author_name || '' },
+      category: { title: row.category_title || '', slug: row.category_slug || '' },
+      coverImage: row.cover_image_url ? { url: row.cover_image_url, alt: row.cover_image_alt || '' } : undefined,
       _status: 'published',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
