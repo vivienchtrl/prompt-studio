@@ -6,7 +6,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Page Not Found - Prompt Studio",
-  description: "Sorry, we couldn't find the page you're looking for.",
+  description: "Sorry, we couldn't find the page you are looking for.",
 }
 
 export default function NotFound() {
@@ -18,7 +18,7 @@ export default function NotFound() {
         <div className="-mt-16 relative z-10">
           <h2 className="text-3xl font-bold mb-4">Page Not Found</h2>
           <p className="text-muted-foreground max-w-md mx-auto mb-8 text-lg">
-            Oops! It seems like the page you're looking for has vanished into the digital void.
+            Oops! It seems like the page you are looking for has vanished into the digital void.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg">
