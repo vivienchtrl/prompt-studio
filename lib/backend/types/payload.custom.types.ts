@@ -27,6 +27,36 @@ export interface Tag {
   name: string;
 }
 
+export interface FAQItem {
+  id?: string;
+  question: string;
+  answer: string;
+}
+
+export interface HowToStep {
+  id?: string;
+  title: string; // In Payload we called it 'title', map this to 'name' in schema
+  text: string;
+  url?: string;
+}
+
+export interface HowToData {
+  title: string;
+  description?: string;
+  estimatedTime?: string;
+  steps: HowToStep[];
+}
+
+export interface VideoData {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  duration?: string;
+  contentUrl?: string;
+  embedUrl?: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -42,4 +72,10 @@ export interface Post {
   parentPost?: string | Post;
   createdAt: string;
   updatedAt: string;
+  faqs?: FAQItem[];
+  enableHowTo?: boolean;
+  howToData?: HowToData;
+  enableVideo?: boolean;
+  videoData?: VideoData;
+  customSchema?: Record<string, any>; // Catch-all type
 }

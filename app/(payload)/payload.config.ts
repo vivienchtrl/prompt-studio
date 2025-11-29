@@ -1,5 +1,5 @@
 import sharp from 'sharp'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, BlocksFeature } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 import { Media } from './collections/Media'
@@ -7,12 +7,21 @@ import { Users } from './collections/Users'
 import { Posts } from './collections/Posts'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
+import { CallToAction } from './blocks/CallToAction'
+import { Mermaid } from './blocks/Mermaid'
 
 // 1. Import the plugin and adapter
 import { s3Storage } from '@payloadcms/storage-s3'
 
 export default buildConfig({
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      BlocksFeature({
+        blocks: [CallToAction, Mermaid],
+      }),
+    ],
+  }),
   collections: [Users, Posts, Media, Categories, Tags],
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({

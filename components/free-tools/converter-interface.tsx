@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 // SEO Imports
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 import { FAQSchema } from '@/components/seo/FAQSchema';
-import { HowToSchema } from '@/components/seo/HowToSchmea'; // Typo in filename kept as per user file
+import { HowToSchema } from '@/components/seo/HowToSchema'; // Typo in filename kept as per user file
 
 type Format = 'json' | 'xml' | 'yaml' | 'markdown' | 'toon';
 
