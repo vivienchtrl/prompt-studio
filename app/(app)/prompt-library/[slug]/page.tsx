@@ -6,6 +6,8 @@ import { eq } from 'drizzle-orm'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
+import { Navbar1 } from '@/components/navigation/nav-bar'
+import { Footer } from '@/components/navigation/footer'   
 
 const getTemplateBySlug = unstable_cache(
   async (slug: string) => {
@@ -50,6 +52,8 @@ export default async function PromptDetailPage({ params }: PromptDetailPageProps
   }
 
   return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar1 />
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="mx-auto max-w-4xl">
         <Link href="/prompt-library">
@@ -86,8 +90,10 @@ export default async function PromptDetailPage({ params }: PromptDetailPageProps
               </TabsContent>
             ) : null}
           </Tabs>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
