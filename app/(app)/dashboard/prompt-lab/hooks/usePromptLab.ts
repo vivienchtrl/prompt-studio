@@ -22,6 +22,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
   const [selectedModels, setSelectedModels] = useState<SelectedModels>(
     initializeSelectedModels()
   );
+  const [selectedMcpIds, setSelectedMcpIds] = useState<number[]>([]);
   const [config, setConfig] = useState<ModelConfig>({
     temperature: 0.7,
     topP: 1,
@@ -66,6 +67,13 @@ export const usePromptLab = (initialPrompt: string = '') => {
     },
     []
   );
+
+  /**
+   * Update selected MCP servers
+   */
+  const handleMcpSelectionChange = useCallback((ids: number[]) => {
+    setSelectedMcpIds(ids);
+  }, []);
 
   /**
    * Initialize results for active models (call before running test)
@@ -115,7 +123,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
         prev[modelId] ?? {
           output: '',
           isLoading: true,
-        };
+          };
 
       return {
         ...prev,
@@ -169,6 +177,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
   const resetLab = useCallback(() => {
     setPrompt('');
     setSelectedModels(initializeSelectedModels());
+    setSelectedMcpIds([]);
     setResults(createEmptyResults());
     setIsLoading(false);
   }, []);
@@ -177,6 +186,7 @@ export const usePromptLab = (initialPrompt: string = '') => {
     // State
     prompt,
     selectedModels,
+    selectedMcpIds,
     config,
     results,
     isLoading,
@@ -186,10 +196,12 @@ export const usePromptLab = (initialPrompt: string = '') => {
     // Setters
     setPrompt: handlePromptChange,
     setSelectedModels: (models: SelectedModels) => setSelectedModels(models),
+    setSelectedMcpIds: handleMcpSelectionChange,
 
     // Handlers
     handlePromptChange,
     handleModelSelectionChange,
+    handleMcpSelectionChange,
     handleConfigChange,
 
     // Result management
@@ -204,4 +216,3 @@ export const usePromptLab = (initialPrompt: string = '') => {
 };
 
 export type UsePromptLabReturn = ReturnType<typeof usePromptLab>;
-

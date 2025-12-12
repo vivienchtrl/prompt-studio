@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import { SoftwareApplicationSchema } from '@/components/seo/SoftwareApplicationSchema'
 import { FAQSchema } from '@/components/seo/FAQSchema'
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
+import { HowToSchema } from '@/components/seo/HowToSchema'
 import { cache } from 'react'
 import { McpServerHeader } from './components/mcp-server-header'
 import { McpServerInfo } from './components/mcp-server-info'
@@ -36,6 +37,25 @@ export async function generateMetadata({ params }: McpServerDetailsPageProps): P
     }
   }
 
+  // Try to parse githubInfo to get avatar
+  let imageUrl = '/media/logo.png'
+  try {
+    if (typeof server.githubInfo === 'string') {
+      const info = JSON.parse(server.githubInfo)
+      if (info?.owner?.avatar_url) {
+        imageUrl = info.owner.avatar_url
+      }
+    } else if (typeof server.githubInfo === 'object' && server.githubInfo !== null) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const info = server.githubInfo as any
+      if (info?.owner?.avatar_url) {
+        imageUrl = info.owner.avatar_url
+      }
+    }
+  } catch (e) {
+    // Ignore parsing error
+  }
+
   return {
     title: `${server.name} - MCP Server`,
     description: server.description,
@@ -48,7 +68,7 @@ export async function generateMetadata({ params }: McpServerDetailsPageProps): P
       siteName: 'Prompt Studio',
       images: [
         {
-          url: '/media/logo.png', // Fallback image, ideally should be dynamic if server has an image
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: server.name,
@@ -59,7 +79,7 @@ export async function generateMetadata({ params }: McpServerDetailsPageProps): P
       card: 'summary_large_image',
       title: server.name,
       description: server.description || '',
-      images: ['/media/logo.png'],
+      images: [imageUrl],
     }
   }
 }
@@ -90,38 +110,62 @@ export default async function McpServerDetailsPage({ params }: McpServerDetailsP
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const faqItems = (Array.isArray(server.faq) ? server.faq : []) as { question: string; answer: string }[]
 
+  // Parse HowTo data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let howToData: any = null
+  try {
+    if (server.howTo) {
+      howToData = typeof server.howTo === 'string' ? JSON.parse(server.howTo) : server.howTo
+    }
+  } catch (e) {
+    console.error('Failed to parse howTo data', e)
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar1 />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <BreadcrumbSchema items={breadcrumbItems} />
-        <SoftwareApplicationSchema 
-          name={server.name}
-          description={server.description || ''}
-          applicationCategory={server.category}
-          url={`${baseUrl}/mcp/${slug}`}
-          datePublished={server.createdAt?.toISOString()}
-          dateModified={server.updatedAt?.toISOString()}
-          offers={{ price: '0', priceCurrency: 'USD' }}
-        />
-        {faqItems.length > 0 && <FAQSchema faqs={faqItems} />}
+      
+      <main className="flex-grow">
+        <McpServerHeader server={server} url={`${baseUrl}/mcp/${slug}`} />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-8">
-            <McpServerHeader server={server} url={`${baseUrl}/mcp/${slug}`} />
-            <McpServerInfo server={server} />
-            <McpReadme readme={server.readme} />
-            <McpFaq faqs={faqItems} />
-          </div>
-
-          {/* Sidebar Column - Related Tools */}
-          <RelatedServers 
-            servers={relatedServers} 
-            currentServerId={server.id} 
+        <div className="container mx-auto px-4 py-8">
+          <BreadcrumbSchema items={breadcrumbItems} />
+          <SoftwareApplicationSchema 
+            name={server.name}
+            description={server.description || ''}
+            applicationCategory={server.category}
+            url={`${baseUrl}/mcp/${slug}`}
+            datePublished={server.createdAt?.toISOString()}
+            dateModified={server.updatedAt?.toISOString()}
+            offers={{ price: '0', priceCurrency: 'USD' }}
           />
+          {faqItems.length > 0 && <FAQSchema faqs={faqItems} />}
+          {howToData && (
+            <HowToSchema 
+              name={howToData.name}
+              description={howToData.description}
+              steps={howToData.step || []}
+              estimatedTime={howToData.totalTime}
+            />
+          )}
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            {/* Main Content Column */}
+            <div className="lg:col-span-2 space-y-8">
+              <McpServerInfo server={server} />
+              <McpReadme readme={server.readme} />
+              <McpFaq faqs={faqItems} />
+            </div>
+
+            {/* Sidebar Column - Related Tools */}
+            <RelatedServers 
+              servers={relatedServers} 
+              currentServerId={server.id} 
+            />
+          </div>
         </div>
       </main>
+      
       <Footer />
     </div>
   )

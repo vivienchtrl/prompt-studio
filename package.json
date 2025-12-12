@@ -24,6 +24,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.2.2",
+    "@modelcontextprotocol/sdk": "^1.23.0",
     "@next/third-parties": "^16.0.4",
     "@payloadcms/db-postgres": "^3.65.0",
     "@payloadcms/next": "^3.65.0",

@@ -11,6 +11,7 @@ export interface ProviderRunParams {
   modelId: string;
   apiKey: string;
   config?: ModelConfig;
+  tools?: Record<string, any>;
 }
 
 export type ProviderRunner = (

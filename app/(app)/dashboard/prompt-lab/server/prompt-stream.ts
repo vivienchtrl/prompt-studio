@@ -2,6 +2,11 @@ import type { ProviderId, ModelId, TokenUsage, ModelConfig } from '../types/defi
 import { getProviderDefinition } from '../providers';
 
 import type { ProviderRunner } from '../providers/types';
+import { db } from '@/db';
+import { userMcpConnections } from '@/db/schema'; // Assurez-vous d'avoir fait l'export dans le point 1
+import { decrypt } from '@/lib/security/encryption';
+import { connectToUserMcpServer, type McpConnectionConfig } from '../utils/mcp-clients';
+import { eq, and, inArray } from 'drizzle-orm';
 
 const encoder = new TextEncoder();
 
@@ -19,18 +24,72 @@ export async function createPromptLabStream({
   prompt,
   apiKey,
   config,
-}: RunnerParams): Promise<ReadableStream<Uint8Array>> {
-  const provider = getProviderDefinition(providerId);
+  userId, // <--- Nouveau paramètre requis
+  mcpServerIds, // <--- IDs des serveurs sélectionnés
+}: RunnerParams & { userId: string; mcpServerIds?: number[] }): Promise<ReadableStream<Uint8Array>> {
 
-  if (!provider) {
-    throw new Error(`Unsupported provider: ${providerId}`);
+  // 1. Récupérer les connexions MCP actives de l'utilisateur (filtrées par sélection)
+  // On utilise un typage explicite pour éviter l'erreur d'inférence
+  type ConnectionType = typeof userMcpConnections.$inferSelect;
+  let activeConnections: ConnectionType[] = [];
+  
+  if (mcpServerIds && mcpServerIds.length > 0) {
+    activeConnections = await db
+      .select()
+      .from(userMcpConnections)
+      .where(
+        and(
+          eq(userMcpConnections.userId, userId),
+          eq(userMcpConnections.enabled, true),
+          inArray(userMcpConnections.id, mcpServerIds)
+        )
+      );
   }
+
+  // 2. Préparer les outils (Connexion en parallèle)
+  let allTools: Record<string, any> = {};
+  
+  // On lance toutes les connexions en même temps pour aller vite
+  // Si activeConnections est vide, le map ne fera rien, pas de souci
+  const connectionPromises = activeConnections.map(async (conn) => {
+    try {
+      let credentials = undefined;
+      if (conn.encryptedCredentials) {
+        const decryptedJson = await decrypt(conn.encryptedCredentials);
+        credentials = JSON.parse(decryptedJson);
+      }
+
+      const connConfig: McpConnectionConfig = {
+        url: conn.url,
+        authType: conn.authType as any,
+        credentials
+      };
+
+      const { tools } = await connectToUserMcpServer(connConfig);
+      return tools;
+    } catch (e) {
+      console.error(`Skipping failed MCP connection ${conn.name}`, e);
+      return {};
+    }
+  });
+
+  const results = await Promise.all(connectionPromises);
+  
+  // Fusionner tous les outils trouvés
+  results.forEach(tools => {
+    Object.assign(allTools, tools);
+  });
+
+  // 3. Lancer le provider avec les outils
+  const provider = getProviderDefinition(providerId);
+  if (!provider) throw new Error(`Unsupported provider: ${providerId}`);
 
   const streamResult = await provider.runStream({
     modelId,
     prompt,
     apiKey,
     config,
+    tools: Object.keys(allTools).length > 0 ? allTools : undefined, // On ne passe undefined que s'il n'y a pas d'outils
   });
   const usagePromise = safeGetUsage(streamResult);
 
@@ -151,4 +210,3 @@ type PromptLabStreamEvent =
 function encodeEvent(event: PromptLabStreamEvent): Uint8Array {
   return encoder.encode(`${JSON.stringify(event)}\n`);
 }
-

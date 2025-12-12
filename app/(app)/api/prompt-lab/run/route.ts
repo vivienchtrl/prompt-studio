@@ -15,6 +15,7 @@ const RunPromptSchema = z.object({
     .string()
     .refine(isValidModelId, 'Unsupported model'),
   prompt: z.string().min(1, 'Prompt is required'),
+  mcpServerIds: z.array(z.number()).optional(),
   config: z
     .object({
       temperature: z.number().min(0).max(2),
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       modelId: rawModelId,
       prompt,
       config,
+      mcpServerIds,
     } = RunPromptSchema.parse(payload);
 
     const modelId = rawModelId as ModelId;
@@ -64,6 +66,8 @@ export async function POST(request: Request) {
       prompt,
       apiKey,
       config,
+      userId: user.id,
+      mcpServerIds,
     });
 
     return new Response(stream, {
@@ -88,4 +92,3 @@ export async function POST(request: Request) {
     });
   }
 }
-

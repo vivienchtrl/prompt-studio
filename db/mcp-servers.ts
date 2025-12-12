@@ -84,6 +84,8 @@ export const mcpServers = pgTable('mcp_servers', {
     readme: text('readme'),
     slug: text('slug').unique(),
     faq: jsonb('faq'),
+    githubInfo: jsonb('github_info'),
+    howTo: text('how_to'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow()
   }, (table) => ({

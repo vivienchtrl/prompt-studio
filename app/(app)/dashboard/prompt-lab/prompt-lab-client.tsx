@@ -1,6 +1,3 @@
-
-
-
 'use client';
 
 import React from 'react';
@@ -13,6 +10,7 @@ import PromptEditor from './components/prompt-editor';
 import ModelSelector from './components/model-selector';
 import ResultsDisplay from './components/results-display';
 import { SettingsSelector } from './components/settings-selector';
+import { McpSelector } from './components/mcp-selector';
 
 import { usePromptLab } from './hooks/usePromptLab';
 import { getActiveModels } from './utils/models';
@@ -36,6 +34,8 @@ const PromptLabPage = () => {
         prompt: promptText,
         modelId,
         config: promptLab.config,
+        // Pass selected MCP server IDs to the backend
+        mcpServerIds: promptLab.selectedMcpIds,
       }),
     });
 
@@ -203,6 +203,11 @@ const PromptLabPage = () => {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-w-fit sm:flex-row sm:items-center sm:justify-end">
+              <McpSelector
+                 selectedMcpIds={promptLab.selectedMcpIds}
+                 onSelectionChange={promptLab.handleMcpSelectionChange}
+                 disabled={promptLab.isLoading}
+              />
               <SettingsSelector
                 config={promptLab.config}
                 onConfigChange={promptLab.handleConfigChange}
@@ -301,5 +306,3 @@ const PromptLabPage = () => {
 };
 
 export default PromptLabPage;
-
-
